@@ -1,0 +1,131 @@
+import { z } from 'zod';
+import { NextResponse } from 'next/server';
+
+/**
+ * Sanitize string input to prevent regex injection
+ */
+export function sanitizeRegexInput(input) {
+  if (typeof input !== 'string') return '';
+  // Escape special regex characters
+  return input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/**
+ * Common validation schemas
+ */
+export const validationSchemas = {
+  email: z.string().email('Invalid email address').toLowerCase().trim(),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+  name: z.string().min(1, 'Name is required').max(50, 'Name too long').trim(),
+  search: z.string().max(100, 'Search query too long').optional(),
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+  objectId: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid ID format'),
+  
+  // Signup schema
+  signup: z.object({
+    name: validationSchemas.name,
+    email: validationSchemas.email,
+    password: validationSchemas.password,
+  }),
+  
+  // Login schema
+  login: z.object({
+    email: validationSchemas.email,
+    password: z.string().min(1, 'Password is required'),
+  }),
+  
+  // Forgot password schema
+  forgotPassword: z.object({
+    email: validationSchemas.email,
+  }),
+  
+  // Reset password schema
+  resetPassword: z.object({
+    token: z.string().min(1, 'Token is required'),
+    password: validationSchemas.password,
+  }),
+  
+  // Product query schema
+  productQuery: z.object({
+    page: validationSchemas.page,
+    limit: validationSchemas.limit,
+    category: z.string().max(50).optional(),
+    search: validationSchemas.search,
+    sort: z.enum(['createdAt', 'price', 'title', 'salesCount']).default('createdAt'),
+    order: z.enum(['asc', 'desc']).default('desc'),
+    minPrice: z.coerce.number().min(0).optional(),
+    maxPrice: z.coerce.number().min(0).optional(),
+    tags: z.string().optional(),
+    featured: z.enum(['true', 'false']).optional(),
+    inStock: z.enum(['true', 'false']).optional(),
+  }),
+  
+  // User query schema
+  userQuery: z.object({
+    page: validationSchemas.page,
+    limit: validationSchemas.limit,
+    search: validationSchemas.search,
+    role: z.enum(['user', 'admin']).optional(),
+    sort: z.string().max(50).default('createdAt'),
+    order: z.enum(['asc', 'desc']).default('desc'),
+  }),
+};
+
+/**
+ * Validate request body with Zod schema
+ */
+export async function validateRequest(request, schema) {
+  try {
+    const body = await request.json();
+    const validated = schema.parse(body);
+    return { success: true, data: validated };
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return {
+        success: false,
+        error: NextResponse.json(
+          { error: 'Validation failed', details: error.errors },
+          { status: 400 }
+        ),
+      };
+    }
+    return {
+      success: false,
+      error: NextResponse.json(
+        { error: 'Invalid request body' },
+        { status: 400 }
+      ),
+    };
+  }
+}
+
+/**
+ * Validate query parameters with Zod schema
+ */
+export function validateQuery(request, schema) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const query = Object.fromEntries(searchParams.entries());
+    const validated = schema.parse(query);
+    return { success: true, data: validated };
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return {
+        success: false,
+        error: NextResponse.json(
+          { error: 'Invalid query parameters', details: error.errors },
+          { status: 400 }
+        ),
+      };
+    }
+    return {
+      success: false,
+      error: NextResponse.json(
+        { error: 'Invalid query parameters' },
+        { status: 400 }
+      ),
+    };
+  }
+}
+

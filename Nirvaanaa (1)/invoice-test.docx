@@ -1,0 +1,17 @@
+NIRVAANAA INVOICE
+
+Invoice Number: {{orderNumber}}
+Order Date: {{orderDate}}
+
+Customer Details
+Name: {{customerName}}
+Email: {{customerEmail}}
+Shipping Address: {{shippingAddress}}
+
+Order Details
+{{#items}}
+Item: {{name}} | Qty: {{quantity}} | Price: {{price}}
+{{/items}}
+
+Shipping Method: {{shippingMethod}}
+Total: {{total}}

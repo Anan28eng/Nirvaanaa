@@ -140,7 +140,7 @@ EMAIL_SERVER_USER=your-email@gmail.com
 EMAIL_SERVER_PASSWORD=your-app-password
 
 # Admin Configuration
-ADMIN_EMAILS=libramank@gmail.com
+ADMIN_EMAILS=admin@nirvaanaa.com
 
 # App Configuration
 NEXT_PUBLIC_APP_URL=http://localhost:3000
@@ -155,7 +155,7 @@ npm run seed
 ```
 
 This will create:
-- Admin user (libramank@gmail.com / admin123)
+- Admin user (admin@nirvaanaa.com / admin123)
 - Sample user (john@example.com / password123)
 - Sample products with images
 - Sample orders and announcements
@@ -393,13 +393,3 @@ Grand Total: {{total_price}}
 ### Emailing PDFs to admins
 
 `/api/generate-invoice` emails the PDF to `ADMIN_EMAILS` using SMTP (`EMAIL_SERVER_*`). If emailing fails, the PDF is still returned.
-
-### PDF conversion dependency
-
-Install LibreOffice on the host for DOCX→PDF via `libreoffice-convert`.
-
-### Dummy checkout flow
-
-1) Click “Dummy Pay” in cart
-2) Redirects to `/checkout/success?orderId=<id>`
-3) Click “Download Invoice (PDF)” to generate and download, and email admins

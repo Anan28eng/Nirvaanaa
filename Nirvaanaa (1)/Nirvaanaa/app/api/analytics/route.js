@@ -3,13 +3,8 @@ import dbConnect from '@/lib/mongodb';
 import Order from '@/models/Order';
 import User from '@/models/User';
 
-// Analytics Schema for database queries
-const analyticsSchema = {
-  type: { type: String, enum: ['revenue', 'orders', 'customers'], required: true },
-  date: { type: Date, required: true },
-  value: { type: Number, required: true },
-  range: { type: String, enum: ['day', 'week', 'month', 'year'], required: true },
-};
+
+
 
 export async function GET(request) {
   try {

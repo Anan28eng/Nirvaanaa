@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 import { useSession } from 'next-auth/react';
 import { useCartStore } from './stores';
@@ -32,7 +32,12 @@ export const useSocket = () => {
     setAnalytics
   } = useAdminStore();
 
-  useEffect(() => {
+  const initializeSocket = useCallback(() => {
+    if (socketRef.current) {
+      socketRef.current.disconnect();
+      socketRef.current = null;
+    }
+
     // Initialize socket connection
     const socket = io(process.env.NEXTAUTH_URL || 'http://localhost:3000', {
       autoConnect: false,
@@ -44,56 +49,50 @@ export const useSocket = () => {
     socketRef.current = socket;
     setSocket(socket);
 
-    // Connection events
-    socket.on('connect', () => {
+    const handleConnect = () => {
       console.log('Connected to WebSocket server');
       setConnected(true);
       setReconnectAttempts(0);
 
-      // Join user-specific room if authenticated
       if (session?.user?.email) {
         socket.emit('join-user', session.user.email);
       }
 
-      // Join admin room if user is admin
       if (session?.user?.role === 'admin') {
         socket.emit('join-admin');
       }
-    });
+    };
 
-    socket.on('disconnect', () => {
+    const handleDisconnect = () => {
       console.log('Disconnected from WebSocket server');
       setConnected(false);
-    });
+    };
 
-    socket.on('connect_error', (error) => {
+    const handleConnectError = (error) => {
       console.error('WebSocket connection error:', error);
       setConnected(false);
-    });
+    };
 
-    socket.on('reconnect_attempt', (attemptNumber) => {
+    const handleReconnectAttempt = (attemptNumber) => {
       console.log(`Reconnection attempt ${attemptNumber}`);
       setReconnectAttempts(attemptNumber);
-    });
+    };
 
-    // Cart events
-    socket.on('cart-changed', (data) => {
+    const handleCartChanged = (data) => {
       console.log('Cart updated via WebSocket:', data);
       if (data.items) {
         setCartItems(data.items);
       }
-    });
+    };
 
-    // Wishlist events
-    socket.on('wishlist-changed', (data) => {
+    const handleWishlistChanged = (data) => {
       console.log('Wishlist updated via WebSocket:', data);
       if (data.items) {
         setWishlistItems(data.items);
       }
-    });
+    };
 
-    // Admin events
-    socket.on('product-changed', (data) => {
+    const handleProductChanged = (data) => {
       console.log('Product updated via WebSocket:', data);
       switch (data.action) {
         case 'created':
@@ -106,9 +105,9 @@ export const useSocket = () => {
           removeProduct(data.productId);
           break;
       }
-    });
+    };
 
-    socket.on('order-changed', (data) => {
+    const handleOrderChanged = (data) => {
       console.log('Order updated via WebSocket:', data);
       switch (data.action) {
         case 'created':
@@ -121,9 +120,9 @@ export const useSocket = () => {
           removeOrder(data.orderId);
           break;
       }
-    });
+    };
 
-    socket.on('customer-changed', (data) => {
+    const handleCustomerChanged = (data) => {
       console.log('Customer updated via WebSocket:', data);
       switch (data.action) {
         case 'created':
@@ -136,9 +135,9 @@ export const useSocket = () => {
           removeCustomer(data.customerId);
           break;
       }
-    });
+    };
 
-    socket.on('kpi-changed', (data) => {
+    const handleKpiChanged = (data) => {
       console.log('KPI updated via WebSocket:', data);
       switch (data.action) {
         case 'created':
@@ -151,23 +150,75 @@ export const useSocket = () => {
           removeKpi(data.kpiId);
           break;
       }
-    });
+    };
 
-    socket.on('analytics-updated', (data) => {
+    const handleAnalyticsUpdated = (data) => {
       console.log('Analytics updated via WebSocket:', data);
       setAnalytics(data.analytics);
-    });
+    };
+
+    socket.on('connect', handleConnect);
+    socket.on('disconnect', handleDisconnect);
+    socket.on('connect_error', handleConnectError);
+    socket.on('reconnect_attempt', handleReconnectAttempt);
+    socket.on('cart-changed', handleCartChanged);
+    socket.on('wishlist-changed', handleWishlistChanged);
+    socket.on('product-changed', handleProductChanged);
+    socket.on('order-changed', handleOrderChanged);
+    socket.on('customer-changed', handleCustomerChanged);
+    socket.on('kpi-changed', handleKpiChanged);
+    socket.on('analytics-updated', handleAnalyticsUpdated);
 
     // Connect to socket
     socket.connect();
 
-    // Cleanup on unmount
+    // Cleanup
     return () => {
-      if (socket) {
-        socket.disconnect();
+      socket.off('connect', handleConnect);
+      socket.off('disconnect', handleDisconnect);
+      socket.off('connect_error', handleConnectError);
+      socket.off('reconnect_attempt', handleReconnectAttempt);
+      socket.off('cart-changed', handleCartChanged);
+      socket.off('wishlist-changed', handleWishlistChanged);
+      socket.off('product-changed', handleProductChanged);
+      socket.off('order-changed', handleOrderChanged);
+      socket.off('customer-changed', handleCustomerChanged);
+      socket.off('kpi-changed', handleKpiChanged);
+      socket.off('analytics-updated', handleAnalyticsUpdated);
+
+      socket.disconnect();
+    };
+  }, [
+    session,
+    maxReconnectAttempts,
+    setSocket,
+    setConnected,
+    setReconnectAttempts,
+    setCartItems,
+    setWishlistItems,
+    addProduct,
+    updateProduct,
+    removeProduct,
+    addOrder,
+    updateOrder,
+    removeOrder,
+    addCustomer,
+    updateCustomer,
+    removeCustomer,
+    addKpi,
+    updateKpi,
+    removeKpi,
+    setAnalytics,
+  ]);
+
+  useEffect(() => {
+    const cleanup = initializeSocket();
+    return () => {
+      if (cleanup) {
+        cleanup();
       }
     };
-  }, [session]);
+  }, [initializeSocket]);
 
   // Update room membership when session changes
   useEffect(() => {

@@ -25,9 +25,7 @@
     }
   ],
   "functions": {
-    "app/api/webhooks/stripe/route.js": {
-      "maxDuration": 30
-    }
+   
   },
   "env": {
     "NODE_ENV": "production"

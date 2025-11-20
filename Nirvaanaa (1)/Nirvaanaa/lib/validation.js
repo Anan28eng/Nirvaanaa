@@ -83,19 +83,14 @@ export async function validateRequest(request, schema) {
   } catch (error) {
     if (error instanceof z.ZodError) {
       return {
+     
         success: false,
-        error: NextResponse.json(
-          { error: 'Validation failed', details: error.errors },
-          { status: 400 }
-        ),
+        error: { message: 'Validation failed', details: error.errors },
       };
     }
-    return {
+     return {
       success: false,
-      error: NextResponse.json(
-        { error: 'Invalid request body' },
-        { status: 400 }
-      ),
+      error: { message: 'Invalid request body' },
     };
   }
 }

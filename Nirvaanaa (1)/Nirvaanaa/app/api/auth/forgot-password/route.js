@@ -10,16 +10,16 @@ export async function POST(req) {
   // Apply rate limiting
   const rateLimitResponse = await rateLimit(req, 'auth');
   if (rateLimitResponse) {
-    return rateLimitResponse;
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
   }
 
   await dbConnect();
   try {
     // Validate request body
     const validation = await validateRequest(req, validationSchemas.forgotPassword);
-    if (!validation.success) {
-      return validation.error;
-    }
+   if (!validation.success) {
+  return NextResponse.json({ error: validation.error }, { status: 400 });
+}
 
     const { email } = validation.data;
 

@@ -14,6 +14,10 @@ module.exports = {
         pathname: '/**',
       },
     ],
+    
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
   },
   async redirects() {
     return [

@@ -17,15 +17,15 @@ export async function POST(req) {
   try {
     // Validate request body
     const validation = await validateRequest(req, validationSchemas.forgotPassword);
-   if (!validation.success) {
-  return NextResponse.json({ error: validation.error }, { status: 400 });
-}
+    if (!validation.success) {
+      return NextResponse.json(validation.error, { status: 400 });
+    }
 
     const { email } = validation.data;
 
     // Find user by email
     const user = await User.findOne({ email: email.toLowerCase() });
-    
+
     // Always return success to prevent email enumeration
     if (!user) {
       return NextResponse.json(
@@ -36,14 +36,11 @@ export async function POST(req) {
 
     // Generate reset token
     const resetToken = crypto.randomBytes(32).toString('hex');
-    const resetTokenHash = crypto
-      .createHash('sha256')
-      .update(resetToken)
-      .digest('hex');
+    const resetTokenHash = crypto.createHash('sha256').update(resetToken).digest('hex');
 
     // Set token and expiry (1 hour)
     user.resetPasswordToken = resetTokenHash;
-    user.resetPasswordExpires = Date.now() + 60 * 60 * 1000; // 1 hour
+    user.resetPasswordExpires = Date.now() + 60 * 60 * 1000;
     await user.save();
 
     // Create reset URL
@@ -66,7 +63,6 @@ export async function POST(req) {
       });
     } catch (emailError) {
       console.error('Email sending error:', emailError);
-      // Don't fail the request if email fails, but log it
     }
 
     return NextResponse.json(
@@ -75,10 +71,8 @@ export async function POST(req) {
     );
   } catch (err) {
     console.error('Forgot password error:', err);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
+
 

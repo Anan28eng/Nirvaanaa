@@ -9,7 +9,7 @@ export async function POST(req) {
   // Apply rate limiting
   const rateLimitResponse = await rateLimit(req, 'auth');
   if (rateLimitResponse) {
-    return rateLimitResponse;
+    return rateLimitResponse; // must already be a valid Response
   }
 
   await dbConnect();
@@ -17,11 +17,15 @@ export async function POST(req) {
     // Validate request body
     const validation = await validateRequest(req, validationSchemas.signup);
     if (!validation.success) {
-      return validation.error;
+      return NextResponse.json(
+        { message: 'Validation failed', details: validation.error.issues },
+        { status: 400 }
+      );
     }
 
     const { name, email, password } = validation.data;
 
+    // Check if user already exists
     const exists = await User.findOne({ email: email.toLowerCase() });
     if (exists) {
       return NextResponse.json(
@@ -30,23 +34,28 @@ export async function POST(req) {
       );
     }
 
+    // Hash password
     const hash = await bcrypt.hash(password, 12);
-    const user = new User({ 
-      name, 
-      email: email.toLowerCase(), 
-      passwordHash: hash, 
-      emailVerified: false 
+
+    // Create new user
+    const user = new User({
+      name,
+      email: email.toLowerCase(),
+      passwordHash: hash,
+      emailVerified: false,
     });
     await user.save();
 
     return NextResponse.json(
-      { 
-        ok: true, 
-        user: user.getPublicProfile ? user.getPublicProfile() : { 
-          id: user._id, 
-          email: user.email, 
-          name: user.name 
-        } 
+      {
+        ok: true,
+        user: user.getPublicProfile
+          ? user.getPublicProfile()
+          : {
+              id: user._id,
+              email: user.email,
+              name: user.name,
+            },
       },
       { status: 201 }
     );
@@ -58,3 +67,5 @@ export async function POST(req) {
     );
   }
 }
+
+

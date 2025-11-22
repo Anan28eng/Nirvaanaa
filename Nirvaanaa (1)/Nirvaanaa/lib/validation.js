@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { NextResponse } from 'next/server';
 
 /**
  * Sanitize string input to prevent regex injection
@@ -83,12 +82,11 @@ export async function validateRequest(request, schema) {
   } catch (error) {
     if (error instanceof z.ZodError) {
       return {
-     
         success: false,
         error: { message: 'Validation failed', details: error.errors },
       };
     }
-     return {
+    return {
       success: false,
       error: { message: 'Invalid request body' },
     };
@@ -118,5 +116,4 @@ export function validateQuery(request, schema) {
   }
 }
 
-}
 

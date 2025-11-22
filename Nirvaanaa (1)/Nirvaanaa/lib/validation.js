@@ -108,19 +108,15 @@ export function validateQuery(request, schema) {
     if (error instanceof z.ZodError) {
       return {
         success: false,
-        error: NextResponse.json(
-          { error: 'Invalid query parameters', details: error.errors },
-          { status: 400 }
-        ),
+        error: { message: 'Invalid query parameters', details: error.errors },
       };
     }
     return {
       success: false,
-      error: NextResponse.json(
-        { error: 'Invalid query parameters' },
-        { status: 400 }
-      ),
+      error: { message: 'Invalid query parameters' },
     };
   }
+}
+
 }
 

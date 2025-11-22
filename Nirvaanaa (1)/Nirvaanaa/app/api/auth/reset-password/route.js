@@ -18,7 +18,10 @@ export async function POST(req) {
     // Validate request body
     const validation = await validateRequest(req, validationSchemas.resetPassword);
     if (!validation.success) {
-      return validation.error;
+      return NextResponse.json(
+        { message: 'Validation failed', details: validation.error.issues },
+        { status: 400 }
+      );
     }
 
     const { token, password } = validation.data;

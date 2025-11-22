@@ -30,7 +30,10 @@ export async function GET(request) {
     // Validate query parameters
     const validation = validateQuery(request, validationSchemas.userQuery);
     if (!validation.success) {
-      return validation.error;
+        return NextResponse.json(
+    { message: 'Validation failed', details: validation.error.issues },
+    { status: 400 }
+  );
     }
 
     const { page, limit, search, role, sort, order } = validation.data;
@@ -117,7 +120,10 @@ export async function POST(request) {
       role: z.enum(['user', 'admin']).default('user'),
     }));
     if (!validation.success) {
-      return validation.error;
+    return NextResponse.json(
+    { message: 'Validation failed', details: validation.error.issues },
+    { status: 400 }
+  );
     }
 
     const { name, email, password, role = 'user' } = validation.data;

@@ -22,7 +22,8 @@ export function OrganizationSchema() {
       "availableLanguage": ["en", "hi"]
     },
     "sameAs": [
-      // Add social media links when available
+      "https://www.instagram.com/nirvaanaa_corporategifting?utm_source=qr&igsh=ZjhvbDg2MzE1Zzl1",
+      "https://wa.me/917763853089"
     ]
   };
 

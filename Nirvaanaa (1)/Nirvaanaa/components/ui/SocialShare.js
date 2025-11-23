@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiShare2, FiX, FiFacebook, FiTwitter, FiInstagram, FiCopy } from 'react-icons/fi';
+import { FiShare2, FiX, FiInstagram, FiCopy } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 
 const SocialShare = ({ product, url }) => {
@@ -13,24 +13,6 @@ const SocialShare = ({ product, url }) => {
   const shareImage = product?.mainImage || product?.images?.[0]?.url;
 
   const shareOptions = [
-    {
-      name: 'Facebook',
-      icon: FiFacebook,
-      color: 'bg-blue-600 hover:bg-blue-700',
-      action: () => {
-        const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
-        window.open(facebookUrl, '_blank', 'width=600,height=400');
-      }
-    },
-    {
-      name: 'Twitter',
-      icon: FiTwitter,
-      color: 'bg-sky-500 hover:bg-sky-600',
-      action: () => {
-        const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
-        window.open(twitterUrl, '_blank', 'width=600,height=400');
-      }
-    },
     {
       name: 'Instagram',
       icon: FiInstagram,
@@ -53,7 +35,7 @@ const SocialShare = ({ product, url }) => {
   ];
 
   const handleWhatsAppShare = () => {
-    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(`${shareText} ${shareUrl}`)}`;
+    const whatsappUrl = `https://wa.me/917763853089?text=${encodeURIComponent(`${shareText} ${shareUrl}`)}`;
     window.open(whatsappUrl, '_blank');
   };
 

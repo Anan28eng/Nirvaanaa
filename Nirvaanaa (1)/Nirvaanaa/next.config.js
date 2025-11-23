@@ -4,17 +4,14 @@ module.exports = {
       {
         protocol: 'https',
         hostname: 'res.cloudinary.com',
-        port: '',
-        pathname: '/**',
+        pathname: '/image/upload/**', // adjust to your actual Cloudinary path
       },
       {
         protocol: 'https',
         hostname: 'th.bing.com',
-        port: '',
-        pathname: '/**',
+        pathname: '/th/**', // adjust to Bing image path
       },
     ],
-    
   },
   eslint: {
     ignoreDuringBuilds: true,
@@ -31,23 +28,15 @@ module.exports = {
   async headers() {
     return [
       {
-        source: '/(.*)',
+        source: '/:path*', // recommended syntax
         headers: [
-          {
-            key: 'X-Frame-Options',
-            value: 'DENY',
-          },
-          {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff',
-          },
-          {
-            key: 'Referrer-Policy',
-            value: 'origin-when-cross-origin',
-          },
+          { key: 'X-Frame-Options', value: 'DENY' },
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'Referrer-Policy', value: 'origin-when-cross-origin' },
         ],
       },
     ];
   },
 };
+
 

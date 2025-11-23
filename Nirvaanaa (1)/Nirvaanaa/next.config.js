@@ -4,7 +4,6 @@ module.exports = {
       {
         protocol: 'https',
         hostname: 'res.cloudinary.com',
-        pathname: '/image/upload/:path*',
       },
     ],
   },
@@ -23,7 +22,7 @@ module.exports = {
   async headers() {
     return [
       {
-        source: '/:path*',
+        source: '/(.*)',
         headers: [
           { key: 'X-Frame-Options', value: 'DENY' },
           { key: 'X-Content-Type-Options', value: 'nosniff' },

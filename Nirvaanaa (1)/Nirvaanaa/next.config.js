@@ -4,16 +4,10 @@ module.exports = {
       {
         protocol: 'https',
         hostname: 'res.cloudinary.com',
-        pathname: '/image/upload/:path*', // safer than '/**'
-      },
-      {
-        protocol: 'https',
-        hostname: 'th.bing.com',
-        pathname: '/:path*', // safer than '/th/**'
+        pathname: '/image/upload/:path*',
       },
     ],
   },
-  
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -29,7 +23,7 @@ module.exports = {
   async headers() {
     return [
       {
-        source: '/:path*', // recommended syntax
+        source: '/:path*',
         headers: [
           { key: 'X-Frame-Options', value: 'DENY' },
           { key: 'X-Content-Type-Options', value: 'nosniff' },
@@ -39,5 +33,6 @@ module.exports = {
     ];
   },
 };
+
 
 

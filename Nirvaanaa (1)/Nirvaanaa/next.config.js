@@ -4,15 +4,16 @@ module.exports = {
       {
         protocol: 'https',
         hostname: 'res.cloudinary.com',
-        pathname: '/image/upload/**', // adjust to your actual Cloudinary path
+        pathname: '/image/upload/:path*', // safer than '/**'
       },
       {
         protocol: 'https',
         hostname: 'th.bing.com',
-        pathname: '/th/**', // adjust to Bing image path
+        pathname: '/:path*', // safer than '/th/**'
       },
     ],
   },
+  
   eslint: {
     ignoreDuringBuilds: true,
   },

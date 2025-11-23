@@ -5,19 +5,13 @@ import dbConnect from '@/lib/mongodb';
 import Order from '@/models/Order';
 import { rateLimit } from '@/lib/rateLimit';
 
-// Initialize Razorpay client
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET,
-});
-
 /**
  * Verify Razorpay payment signature
  */
-function verifyPaymentSignature(orderId, paymentId, signature) {
+function verifyPaymentSignature(orderId, paymentId, signature, secret) {
   const text = `${orderId}|${paymentId}`;
   const generatedSignature = crypto
-    .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
+    .createHmac('sha256', secret)
     .update(text)
     .digest('hex');
 
@@ -50,11 +44,20 @@ export async function POST(request) {
       );
     }
 
+    // Guard against missing keys
+    if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+      return NextResponse.json(
+        { error: 'Razorpay is not configured. Payments are disabled in this environment.' },
+        { status: 503 }
+      );
+    }
+
     // Verify payment signature
     const isValidSignature = verifyPaymentSignature(
       razorpay_order_id,
       razorpay_payment_id,
-      razorpay_signature
+      razorpay_signature,
+      process.env.RAZORPAY_KEY_SECRET
     );
 
     if (!isValidSignature) {
@@ -75,19 +78,23 @@ export async function POST(request) {
       );
     }
 
+    // Initialize Razorpay client only when keys exist
+    const razorpay = new Razorpay({
+      key_id: process.env.RAZORPAY_KEY_ID,
+      key_secret: process.env.RAZORPAY_KEY_SECRET,
+    });
+
     // Verify payment with Razorpay API
     try {
       const payment = await razorpay.payments.fetch(razorpay_payment_id);
 
       if (payment.status === 'captured' && payment.order_id === razorpay_order_id) {
-        // Payment is valid and captured
-        // Update order status if not already updated (webhook might have done this)
         if (order.paymentStatus !== 'paid') {
           order.paymentStatus = 'paid';
           order.status = 'processing';
           order.razorpayPaymentId = razorpay_payment_id;
           order.razorpayOrderId = razorpay_order_id;
-          
+
           if (order.addTimelineEntry) {
             order.addTimelineEntry(
               'processing',
@@ -95,7 +102,7 @@ export async function POST(request) {
               null
             );
           }
-          
+
           await order.save();
         }
 
@@ -126,4 +133,5 @@ export async function POST(request) {
     );
   }
 }
+
 

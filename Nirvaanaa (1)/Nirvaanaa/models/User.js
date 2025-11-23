@@ -132,9 +132,7 @@ const userSchema = new mongoose.Schema({
 });
 
 // Index for efficient queries
-userSchema.index({ email: 1 });
-userSchema.index({ googleId: 1 });
-userSchema.index({ facebookId: 1 });
+// Note: email, googleId, and facebookId already have indexes from unique:true and sparse:true
 userSchema.index({ role: 1 });
 
 // Virtual for password (not stored in DB)

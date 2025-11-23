@@ -250,13 +250,11 @@ const orderSchema = new mongoose.Schema({
 });
 
 // Indexes for efficient queries
-orderSchema.index({ orderNumber: 1 });
+// Note: orderNumber, razorpayOrderId, and razorpayPaymentId already have indexes from unique:true and sparse:true
 orderSchema.index({ userId: 1 });
 orderSchema.index({ status: 1 });
 orderSchema.index({ paymentStatus: 1 });
 orderSchema.index({ createdAt: -1 });
-orderSchema.index({ razorpayOrderId: 1 });
-orderSchema.index({ razorpayPaymentId: 1 });
 orderSchema.index({ 'shippingAddress.phone': 1 });
 
 // Virtual for order summary

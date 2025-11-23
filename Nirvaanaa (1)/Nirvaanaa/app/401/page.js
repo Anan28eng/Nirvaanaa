@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { FiLock, FiLogIn } from 'react-icons/fi';
+import { FiLock, FiLogIn,FiHome } from 'react-icons/fi';
 
 export default function UnauthorizedPage() {
   return (

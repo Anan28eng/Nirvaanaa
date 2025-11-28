@@ -11,7 +11,7 @@ export default function Error({ error, reset }) {
   }, [error]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-cream-50 via-white to-cream-50 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-nirvaanaa-offwhite flex items-center justify-center px-4">
       <div className="max-w-2xl w-full text-center">
         <motion.div
           initial={{ opacity: 0, y: 30 }}

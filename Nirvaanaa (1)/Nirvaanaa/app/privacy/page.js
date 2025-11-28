@@ -8,7 +8,7 @@ const inter = Inter({ subsets: ['latin'], weight: '400' });
 
 export default function PrivacyPage() {
   return (
-    <main className="min-h-screen bg-gradient-to-br from-[#f5f3ea] to-[#e3e0d9] px-4 py-8 flex flex-col items-center">
+    <main className="min-h-screen bg-nirvaanaa-offwhite px-4 py-8 flex flex-col items-center">
       <motion.h1 
         initial={{ opacity: 0, y: -30 }} 
         animate={{ opacity: 1, y: 0 }} 
@@ -49,10 +49,10 @@ export default function PrivacyPage() {
             We appreciate your patience. If you have any questions about privacy or data protection, 
             please feel free to contact us at{' '}
             <a 
-              href="mailto:libramank@gmail.com" 
+              href="mailto:nirvaanaacreations@gmail.com" 
               className="text-[#bfae9e] hover:text-[#7c6a58] underline transition-colors"
             >
-              libramank@gmail.com
+              nirvaanaacreations@gmail.com
             </a>
           </p>
         </motion.div>

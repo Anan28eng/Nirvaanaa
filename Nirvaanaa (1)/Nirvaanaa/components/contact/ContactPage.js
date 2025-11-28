@@ -68,7 +68,7 @@ const ContactPage = () => {
     {
       icon: <FiMail className="w-6 h-6" />,
       title: 'Email Us',
-      details: ['libramank@gmail.com'],
+      details: ['nirvaanaacreations@gmail.com'],
       description: 'We typically respond within 24 hours'
     },
     {
@@ -97,10 +97,10 @@ const ContactPage = () => {
             <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
               <FiCheck className="w-10 h-10 text-green-600" />
             </div>
-            <h1 className="text-3xl font-playfair font-bold text-brand-brown mb-4">
+            <h1 className="text-3xl font-playfair font-bold text-nirvaanaa-secondary mb-4">
               Message Sent Successfully!
             </h1>
-            <p className="text-brand-brown text-lg mb-8">
+            <p className="text-nirvaanaa-secondary/80 text-lg mb-8">
               Thank you for reaching out to us. We've received your message and will get back to you within 24 hours.
             </p>
             <button
@@ -124,10 +124,10 @@ const ContactPage = () => {
         transition={{ duration: 0.8 }}
         className="text-center mb-16"
       >
-        <h1 className="text-4xl sm:text-5xl font-playfair font-bold text-brand-brown mb-4">
+        <h1 className="text-4xl sm:text-5xl font-playfair font-bold text-nirvaanaa-secondary mb-4">
           Contact Us for Handcrafted Embroidery
         </h1>
-        <p className="text-xl text-brand-brown max-w-3xl mx-auto">
+        <p className="text-xl text-nirvaanaa-secondary/80 max-w-3xl mx-auto">
           Have questions about our handcrafted embroidery products? Want to collaborate? 
           We'd love to hear from you. Send us a message and we'll respond as soon as possible.
         </p>
@@ -141,14 +141,14 @@ const ContactPage = () => {
           transition={{ duration: 0.8, delay: 0.2 }}
         >
           <div className="bg-white rounded-2xl shadow-sm p-8">
-            <h2 className="text-2xl font-playfair font-bold text-brand-brown mb-6">
+            <h2 className="text-2xl font-playfair font-bold text-nirvaanaa-secondary mb-6">
               Send us a Message
             </h2>
             
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid sm:grid-cols-2 gap-6">
                 <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-brand-brown mb-2">
+                  <label htmlFor="name" className="block text-sm font-medium text-nirvaanaa-secondary mb-2">
                     Full Name *
                   </label>
                   <input
@@ -219,7 +219,7 @@ const ContactPage = () => {
               </div>
 
               <div>
-                <label htmlFor="message" className="block text-sm font-medium text-brand-brown mb-2">
+                <label htmlFor="message" className="block text-sm font-medium text-nirvaanaa-secondary mb-2">
                   Message *
                 </label>
                 <textarea
@@ -229,7 +229,7 @@ const ContactPage = () => {
                   onChange={handleInputChange}
                   required
                   rows={6}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-gold focus:border-transparent resize-none"
+                  className="textarea-field"
                   placeholder="Tell us how we can help you..."
                 />
               </div>
@@ -263,10 +263,10 @@ const ContactPage = () => {
           className="space-y-8"
         >
           <div>
-            <h2 className="text-2xl font-playfair font-bold text-brand-brown mb-6">
+            <h2 className="text-2xl font-playfair font-bold text-nirvaanaa-secondary mb-6">
               Contact Information
             </h2>
-            <p className="text-brand-brown mb-8">
+            <p className="text-nirvaanaa-secondary/80 mb-8">
               We're here to help and answer any questions you might have. 
               We look forward to hearing from you.
             </p>
@@ -281,21 +281,21 @@ const ContactPage = () => {
                 transition={{ duration: 0.5, delay: 0.6 + index * 0.1 }}
                 className="flex gap-4"
               >
-                <div className="flex-shrink-0 w-12 h-12 bg-brand-gold rounded-lg flex items-center justify-center text-brand-cream">
+                <div className="flex-shrink-0 w-12 h-12 bg-nirvaanaa-secondary rounded-lg flex items-center justify-center text-white">
                   {info.icon}
                 </div>
                 <div>
-                  <h3 className="font-semibold text-brand-brown mb-2">
+                  <h3 className="font-semibold text-nirvaanaa-secondary mb-2">
                     {info.title}
                   </h3>
                   <div className="space-y-1">
                     {info.details.map((detail, i) => (
-                      <p key={i} className="text-brand-brown">
+                      <p key={i} className="text-nirvaanaa-secondary/80">
                         {detail}
                       </p>
                     ))}
                   </div>
-                  <p className="text-sm text-brand-brown mt-2">
+                  <p className="text-sm text-nirvaanaa-secondary/80 mt-2">
                     {info.description}
                   </p>
                 </div>

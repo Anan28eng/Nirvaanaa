@@ -4,17 +4,17 @@ import { FiInstagram, FiMail, FiPhone } from 'react-icons/fi';
 export default function Footer() {
   const currentYear = new Date().getFullYear();
   return (
-    <footer className="bg-brand-brown text-white">
+    <footer className="bg-nirvaanaa-secondary text-white">
       <div className="max-width container-padding py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Brand Section */}
           <div className="lg:col-span-1">
             <Link href="/" className="inline-block mb-4">
-              <h3 className="text-2xl font-playfair font-bold text-brand-gold">
+              <h3 className="text-2xl font-playfair font-bold text-nirvaanaa-primary">
                 Nirvaanaa
               </h3>
             </Link>
-            <p className="text-gray-300 mb-4 leading-relaxed">
+            <p className="text-nirvaanaa-primary/80 mb-4 leading-relaxed">
               Handcrafted elegance meets contemporary style. Each piece tells a story of tradition, 
               craftsmanship, and timeless beauty.
             </p>
@@ -23,7 +23,7 @@ export default function Footer() {
                 href="https://www.instagram.com/nirvaanaa_corporategifting?utm_source=qr&igsh=ZjhvbDg2MzE1Zzl1"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-300 hover:text-brand-gold transition-colors"
+                className="text-nirvaanaa-primary/80 hover:text-nirvaanaa-primary transition-colors duration-300"
                 aria-label="Instagram"
               >
                 <FiInstagram size={20} />
@@ -32,7 +32,7 @@ export default function Footer() {
                 href="https://wa.me/917763853089"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-300 hover:text-brand-gold transition-colors"
+                className="text-nirvaanaa-primary/80 hover:text-nirvaanaa-primary transition-colors duration-300"
                 aria-label="WhatsApp"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -44,30 +44,30 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-lg font-semibold mb-4 text-brand-gold">Quick Links</h4>
+            <h4 className="text-lg font-semibold mb-4 text-nirvaanaa-primary">Quick Links</h4>
             <ul className="space-y-2">
               <li>
-                <Link href="/products" className="text-gray-300 hover:text-white transition-colors">
+                <Link href="/products" className="text-nirvaanaa-primary/80 hover:text-nirvaanaa-primary transition-colors duration-300">
                   Shop All
                 </Link>
               </li>
               <li>
-                <Link href="/products?category=bags" className="text-gray-300 hover:text-white transition-colors">
+                <Link href="/products?category=bags" className="text-nirvaanaa-primary/80 hover:text-nirvaanaa-primary transition-colors duration-300">
                   Bags
                 </Link>
               </li>
               <li>
-                <Link href="/products?category=sarees" className="text-gray-300 hover:text-white transition-colors">
+                <Link href="/products?category=sarees" className="text-nirvaanaa-primary/80 hover:text-nirvaanaa-primary transition-colors duration-300">
                   Sarees
                 </Link>
               </li>
               <li>
-                <Link href="/about" className="text-gray-300 hover:text-white transition-colors">
+                <Link href="/about" className="text-nirvaanaa-primary/80 hover:text-nirvaanaa-primary transition-colors duration-300">
                   About Us
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="text-gray-300 hover:text-white transition-colors">
+                <Link href="/contact" className="text-nirvaanaa-primary/80 hover:text-nirvaanaa-primary transition-colors duration-300">
                   Contact
                 </Link>
               </li>
@@ -76,25 +76,25 @@ export default function Footer() {
 
           {/* Customer Service */}
           <div>
-            <h4 className="text-lg font-semibold mb-4 text-brand-gold">Customer Service</h4>
+            <h4 className="text-lg font-semibold mb-4 text-nirvaanaa-primary">Customer Service</h4>
             <ul className="space-y-2">
               <li>
-                <Link href="/shipping" className="text-gray-300 hover:text-white transition-colors">
+                <Link href="/shipping" className="text-nirvaanaa-primary/80 hover:text-nirvaanaa-primary transition-colors duration-300">
                   Shipping Info
                 </Link>
               </li>
               <li>
-                <Link href="/returns" className="text-gray-300 hover:text-white transition-colors">
+                <Link href="/returns" className="text-nirvaanaa-primary/80 hover:text-nirvaanaa-primary transition-colors duration-300">
                   Returns & Exchanges
                 </Link>
               </li>
               <li>
-                <Link href="/care-instructions" className="text-gray-300 hover:text-white transition-colors">
+                <Link href="/care-instructions" className="text-nirvaanaa-primary/80 hover:text-nirvaanaa-primary transition-colors duration-300">
                   Care Instructions
                 </Link>
               </li>
               <li>
-                <Link href="/faq" className="text-gray-300 hover:text-white transition-colors">
+                <Link href="/faq" className="text-nirvaanaa-primary/80 hover:text-nirvaanaa-primary transition-colors duration-300">
                   FAQ
                 </Link>
               </li>
@@ -103,22 +103,22 @@ export default function Footer() {
 
           {/* Contact Info */}
           <div>
-            <h4 className="text-lg font-semibold mb-4 text-brand-gold">Contact Us</h4>
+            <h4 className="text-lg font-semibold mb-4 text-nirvaanaa-primary">Contact Us</h4>
             <div className="space-y-3">
               <div className="flex items-center space-x-2">
-                <FiMail className="text-brand-gold" size={16} />
+                <FiMail className="text-nirvaanaa-primary" size={16} />
                 <a
                   href="mailto:libramank@gmail.com"
-                  className="text-gray-300 hover:text-white transition-colors"
+                  className="text-nirvaanaa-primary/80 hover:text-nirvaanaa-primary transition-colors duration-300"
                 >
-                  libramank@gmail.com
+                  nirvaanaacreations@gmail.com
                 </a>
               </div>
               <div className="flex items-center space-x-2">
-                <FiPhone className="text-brand-gold" size={16} />
+                <FiPhone className="text-nirvaanaa-primary" size={16} />
                 <a
                   href="tel:7763853089"
-                  className="text-gray-300 hover:text-white transition-colors"
+                  className="text-nirvaanaa-primary/80 hover:text-nirvaanaa-primary transition-colors duration-300"
                 >
                   7763853089
                 </a>
@@ -128,15 +128,39 @@ export default function Footer() {
         </div>
 
         {/* Bottom Section */}
-        <div className="border-t border-gray-700 mt-8 pt-8">
+        <div className="border-t border-nirvaanaa-primary/20 mt-8 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <div className="text-sm text-gray-400">
+            <div className="text-sm text-nirvaanaa-primary/70">
               © {currentYear} Nirvaanaa. All rights reserved. Handcrafted with love in India.
             </div>
-            <div className="flex space-x-6 text-sm">
-              <Link href="/privacy" className="text-gray-400 hover:text-white transition-colors">
+            <div className="flex flex-wrap justify-center md:justify-end gap-4 text-sm">
+              <Link href="/privacy" className="text-nirvaanaa-primary/70 hover:text-nirvaanaa-primary transition-colors duration-300">
                 Privacy Policy
               </Link>
+              <a
+                href="https://merchant.razorpay.com/policy/Rj683bqgr2gZ87/refund"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-nirvaanaa-primary/70 hover:text-nirvaanaa-primary transition-colors duration-300"
+              >
+                Refund Policy
+              </a>
+              <a
+                href="https://merchant.razorpay.com/policy/Rj683bqgr2gZ87/terms"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-nirvaanaa-primary/70 hover:text-nirvaanaa-primary transition-colors duration-300"
+              >
+                Terms &amp; Conditions
+              </a>
+              <a
+                href="https://merchant.razorpay.com/policy/Rj683bqgr2gZ87/shipping"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-nirvaanaa-primary/70 hover:text-nirvaanaa-primary transition-colors duration-300"
+              >
+                Shipping Policy
+              </a>
             </div>
           </div>
         </div>

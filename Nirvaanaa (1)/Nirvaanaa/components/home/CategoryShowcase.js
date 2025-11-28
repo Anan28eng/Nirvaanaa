@@ -77,14 +77,14 @@ const CategoryCard = ({ category, index }) => {
         {/* Content */}
         <div className="absolute inset-0 flex flex-col justify-end p-6 text-white">
           <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-            <h3 className="text-2xl font-playfair font-bold mb-2">
+            <h3 className="text-2xl font-playfair text-nirvaanaa-secondary font-bold mb-2">
               {category.name}
             </h3>
-            <p className="text-sm opacity-90 mb-3 line-clamp-2">
+            <p className="text-sm opacity-90 text-white mb-3 line-clamp-2">
               {category.description}
             </p>
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">
+              <span className="text-sm font-medium text-white">
                 {category.productCount} Products
               </span>
               <motion.div
@@ -191,10 +191,10 @@ const CategoryShowcase = () => {
           transition={{ duration: 0.8 }}
           className="text-center mb-12"
         >
-          <h2 className="text-3xl sm:text-4xl font-playfair font-bold text-brand-brown mb-4">
+          <h2 className="text-3xl sm:text-4xl font-playfair font-bold text-nirvaanaa-secondary mb-4">
             Shop by Category
           </h2>
-          <p className="text-brand-brown max-w-2xl mx-auto text-lg">
+          <p className="text-nirvaanaa-secondary/80 max-w-2xl mx-auto text-lg">
             Explore our carefully curated collections of handcrafted embroidery pieces, 
             each designed with love and attention to detail.
           </p>
@@ -211,24 +211,24 @@ const CategoryShowcase = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
-          className="mt-16 relative overflow-hidden rounded-3xl bg-gradient-to-r from-orange-100 to-orange-300 text-white"
+          className="mt-16 relative overflow-hidden rounded-3xl bg-gradient-to-r from-nirvaanaa-secondary to-nirvaanaa-secondary-dark/30 text-white"
         >
           <div className="absolute inset-0 bg-black bg-opacity-10" />
           
           <div className="relative p-8 lg:p-12">
             <div className="grid lg:grid-cols-2 gap-8 items-center">
               <div>
-                <h3 className="text-3xl lg:text-4xl font-playfair font-bold mb-4">
+                <h3 className="text-3xl lg:text-4xl font-playfair font-bold mb-4 text-white">
                   New Collection
                 </h3>
-                <p className="text-lg mb-6 opacity-90">
+                <p className="text-lg mb-6 opacity-90 text-nirvaanaa-primary/90">
                   Discover our latest handcrafted embroidery collection featuring 
                   traditional motifs with contemporary designs.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4">
                   <Link
                     href="/products?new=true"
-                    className="btn-primary bg-white text-brand-gold hover:bg-gray-100 inline-flex items-center justify-center"
+                    className="btn-primary bg-nirvaanaa-primary text-nirvaanaa-primary   inline-flex items-center justify-center"
                   >
                     Shop New Arrivals
                     <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -237,7 +237,7 @@ const CategoryShowcase = () => {
                   </Link>
                   <Link
                     href="/about"
-                    className="btn-secondary border-white text-white hover:bg-white hover:text-brand-gold inline-flex items-center justify-center"
+                    className="px-6 py-2 rounded-lg shadow-md bg-nirvaanaa-primary border-nirvaanaa-primary text-nirvaanaa-secondary   inline-flex items-center justify-center"
                   >
                     Learn More
                   </Link>
@@ -256,10 +256,10 @@ const CategoryShowcase = () => {
                 </div>
                 
                 {/* Floating Badge */}
-                <div className="absolute -top-4 -right-4 bg-white text-brand-gold rounded-full p-3 shadow-lg">
+                <div className="absolute -top-4 -right-4 bg-white text-nirvaanaa-secondary rounded-full p-3 shadow-nirvaanaa">
                   <div className="text-center">
                     <div className="text-xl font-bold">NEW</div>
-                    <div className="text-xs">2025</div>
+                    <div className="text-xs text-nirvaanaa-primary">{new Date().getFullYear()}</div>
                   </div>
                 </div>
               </div>
@@ -267,8 +267,8 @@ const CategoryShowcase = () => {
           </div>
 
           {/* Decorative Elements */}
-          <div className="absolute top-8 right-8 w-20 h-20 bg-white bg-opacity-10 rounded-full" />
-          <div className="absolute bottom-8 left-8 w-16 h-16 bg-white bg-opacity-10 rounded-full" />
+          <div className="absolute top-8 right-8 w-20 h-20 bg-nirvaanaa-primary/20 rounded-full" />
+          <div className="absolute bottom-8 left-8 w-16 h-16 bg-nirvaanaa-primary/20 rounded-full" />
         </motion.div>
       </div>
     </section>

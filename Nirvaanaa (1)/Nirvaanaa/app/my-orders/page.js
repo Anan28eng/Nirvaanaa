@@ -97,7 +97,7 @@ export default function MyOrdersPage() {
   if (!session) return <div className="text-center py-20">Please sign in to view your orders.</div>;
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-[#f5f3ea] to-[#e3e0d9] px-4 py-8 flex flex-col items-center">
+    <main className="min-h-screen bg-nirvaanaa-offwhite px-4 py-8 flex flex-col items-center">
       <motion.h1 initial={{ opacity: 0, y: -30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }} className={`${playfair.className} text-4xl md:text-5xl font-bold mb-6 text-center bg-clip-text text-transparent bg-gradient-to-r from-[#bfae9e] to-[#7c6a58]`}>My Orders</motion.h1>
 
       <div className="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-3 gap-6">

@@ -134,14 +134,15 @@ export default function EnhancedProductCard({ product }) {
 
   return (
     <motion.div
-      className="group relative bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300"
-      whileHover={{ y: -5 }}
+      className="group relative bg-white rounded-xl shadow-soft overflow-hidden hover:shadow-nirvaanaa-hover transition-all duration-300 border border-nirvaanaa-primary/10"
+      whileHover={{ y: -8 }}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
+      style={{ boxShadow: '0 2px 8px rgba(7, 30, 201, 0.08)' }}
     >
       {/* Product Image */}
-      <div className="relative h-64 overflow-hidden">
+      <div className="relative h-64 overflow-hidden rounded-t-xl">
         <Image
           src={liveProduct.images?.[0]?.url || liveProduct.mainImage || '/placeholder-product.jpg'}
           alt={liveProduct.title}
@@ -157,10 +158,10 @@ export default function EnhancedProductCard({ product }) {
               whileTap={{ scale: 0.9 }}
               onClick={handleAddToCart}
               disabled={isLoading}
-              className="bg-white p-2 rounded-full shadow-lg hover:bg-gray-100 transition-colors disabled:opacity-50"
+              className="bg-white p-2 rounded-full shadow-lg hover:bg-nirvaanaa-secondary hover:text-white transition-all duration-300 disabled:opacity-50"
               title="Add to Cart"
             >
-              <ShoppingCart className="w-5 h-5 text-gray-700" />
+              <ShoppingCart className="w-5 h-5 text-nirvaanaa-secondary group-hover:text-white transition-colors" />
             </motion.button>
             
             <motion.button
@@ -168,10 +169,10 @@ export default function EnhancedProductCard({ product }) {
               whileTap={{ scale: 0.9 }}
               onClick={handleWishlistToggle}
               disabled={isWishlistLoading}
-              className={`p-2 rounded-full shadow-lg transition-colors disabled:opacity-50 ${
+              className={`p-2 rounded-full shadow-lg transition-all duration-300 disabled:opacity-50 ${
                 isInWishlist 
                   ? 'bg-red-500 text-white hover:bg-red-600' 
-                  : 'bg-white text-gray-700 hover:bg-gray-100'
+                  : 'bg-white text-nirvaanaa-secondary hover:bg-nirvaanaa-primary'
               }`}
               title={isInWishlist ? 'Remove from Wishlist' : 'Add to Wishlist'}
             >
@@ -182,10 +183,10 @@ export default function EnhancedProductCard({ product }) {
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
-                className="bg-white p-2 rounded-full shadow-lg hover:bg-gray-100 transition-colors"
+                className="bg-white p-2 rounded-full shadow-lg hover:bg-nirvaanaa-primary hover:text-nirvaanaa-secondary transition-all duration-300"
                 title="View Details"
               >
-                <Eye className="w-5 h-5 text-gray-700" />
+                <Eye className="w-5 h-5 text-nirvaanaa-secondary" />
               </motion.button>
             </Link>
           </div>
@@ -211,7 +212,7 @@ export default function EnhancedProductCard({ product }) {
       {/* Product Info */}
       <div className="p-4">
         <Link href={`/products/${liveProduct.slug}`}>
-          <h3 className="text-lg font-semibold text-gray-800 hover:text-[#7c6a58] transition-colors mb-2">
+          <h3 className="text-lg font-semibold text-nirvaanaa-secondary hover:text-nirvaanaa-primary transition-colors duration-300 mb-2">
             {liveProduct.title}
           </h3>
         </Link>
@@ -221,13 +222,13 @@ export default function EnhancedProductCard({ product }) {
         </p>
         
         <div className="flex items-center justify-between">
-          <span className="text-xl font-bold text-[#7c6a58]">
+          <span className="text-xl font-bold text-nirvaanaa-secondary">
             ₹{(liveProduct.price || 0).toLocaleString('en-IN')}
           </span>
           
           <div className="flex items-center space-x-2">
             {liveProduct.category && (
-              <span className="text-xs bg-[#f5f3ea] text-[#7c6a58] px-2 py-1 rounded-full">
+              <span className="text-xs bg-nirvaanaa-primary-lighter text-nirvaanaa-secondary px-2 py-1 rounded-full">
                 {liveProduct.category}
               </span>
             )}

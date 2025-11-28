@@ -5,50 +5,44 @@ module.exports = {
     './components/**/*.{js,ts,jsx,tsx,mdx}',
     './app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
+
   theme: {
     extend: {
       colors: {
-        primary: {
-          50: '#fefefe',
-          100: '#fdfcfb',
-          200: '#faf8f5',
-          300: '#f5f1eb',
-          400: '#ede6dc',
-          500: '#e0d5c7',
-          600: '#d1c2b0',
-          700: '#b8a590',
-          800: '#9a8a75',
-          900: '#7d7160',
-        },
-        accent: {
-          50: '#fffbf0',
-          100: '#fef3c7',
-          200: '#fde68a',
-          300: '#fcd34d',
-          400: '#fbbf24',
-          500: '#f59e0b',
-          600: '#d97706',
-          700: '#b45309',
-          800: '#92400e',
-          900: '#78350f',
-        },
-        brand: {
-          beige: '#f5f1eb',
-          gold: '#d4af37',
-          cream: '#fefefe',
-          brown: '#8b4513',
+        nirvaanaa: {
+          primary: "rgb(165 227 249 / <alpha-value>)",
+          secondary: "rgb(7 30 201 / <alpha-value>)",
+          dark: "rgb(5 22 150 / <alpha-value>)",
+          'primary-light': "rgba(165, 227, 249, 0.1)",
+          'primary-lighter': "rgba(165, 227, 249, 0.05)",
+          'secondary-light': "rgba(7, 30, 201, 0.1)",
+          'secondary-dark': "rgb(5, 22 150)",
+          'soft-gold': "rgb(217 192 141 / <alpha-value>)",
+          'shell': "#e6f0f9",
+          'offwhite': '#e6f0f9',
         },
       },
+
       fontFamily: {
-        'playfair': ['Playfair Display', 'serif'],
-        'inter': ['Inter', 'sans-serif'],
+        playfair: ['Playfair Display', 'serif'],
+        inter: ['Inter', 'sans-serif'],
       },
+
+      backgroundImage: {
+        'nirvaanaa-art': 'radial-gradient(circle at 18% 18%, rgba(165, 227, 249, 0.45), transparent 48%), radial-gradient(circle at 78% 0%, rgba(7, 30, 201, 0.12), transparent 34%), linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(165, 227, 249, 0.55))',
+        'nirvaanaa-ribbon': 'linear-gradient(122deg, rgba(7, 30, 201, 0.92) 0%, rgba(165, 227, 249, 0.82) 100%)',
+        'nirvaanaa-soft': 'linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(249, 245, 237, 0.85) 45%, rgba(165, 227, 249, 0.35) 100%)',
+        'nirvaanaa-veil': 'radial-gradient(circle at 10% 20%, rgba(249, 245, 237, 0.92), transparent 45%), radial-gradient(circle at 82% 8%, rgba(165, 227, 249, 0.32), transparent 32%), linear-gradient(160deg, rgba(255, 255, 255, 0.88), rgba(165, 227, 249, 0.4) 60%, rgba(7, 30, 201, 0.15))',
+        'nirvaanaa-deep': 'radial-gradient(circle at 12% 18%, rgba(165, 227, 249, 0.55), transparent 50%), radial-gradient(circle at 70% 5%, rgba(7, 30, 201, 0.18), transparent 36%), linear-gradient(120deg, rgba(249, 245, 237, 0.92), rgba(165, 227, 249, 0.42), rgba(255, 255, 255, 0.95))',
+      },
+
       animation: {
         'fade-in': 'fadeIn 0.5s ease-in-out',
         'slide-up': 'slideUp 0.3s ease-out',
         'slide-down': 'slideDown 0.3s ease-out',
         'scale-in': 'scaleIn 0.2s ease-out',
       },
+
       keyframes: {
         fadeIn: {
           '0%': { opacity: '0' },
@@ -67,11 +61,17 @@ module.exports = {
           '100%': { transform: 'scale(1)', opacity: '1' },
         },
       },
+
       boxShadow: {
-        'elegant': '0 4px 20px rgba(0, 0, 0, 0.08)',
-        'soft': '0 2px 10px rgba(0, 0, 0, 0.05)',
+        elegant: '0 8px 24px rgba(7, 30, 201, 0.25)',
+        soft: '0 2px 8px rgba(7, 30, 201, 0.08)',
+        'nirvaanaa': '0 4px 12px rgba(7, 30, 201, 0.25)',
+        'nirvaanaa-hover': '0 8px 24px rgba(7, 30, 201, 0.35)',
+        'nirvaanaa-soft': '0 25px 55px rgba(7, 30, 201, 0.12)',
+        'nirvaanaa-glow': '0 35px 120px rgba(165, 227, 249, 0.25)',
       },
     },
   },
+
   plugins: [],
 };

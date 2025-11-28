@@ -49,10 +49,10 @@ export default function SignInPage() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-[#f5f3ea] to-[#e3e0d9] px-4 py-8 flex flex-col items-center justify-center">
-      <motion.h1 initial={{ opacity: 0, y: -30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }} className={`${playfair.className} text-4xl md:text-5xl font-bold mb-6 text-center bg-clip-text text-transparent bg-gradient-to-r from-[#bfae9e] to-[#7c6a58]`}>Welcome to Nirvaanaa</motion.h1>
-      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className={`${inter.className} mb-8 text-lg text-[#7c6a58] italic text-center`}>Step into a world where every sign-in is a verse, and every user is a cherished guest.</motion.p>
-      <div className="glassmorphism p-8 rounded-xl shadow-lg flex flex-col gap-4 w-full max-w-md">
+    <main className="min-h-screen bg-nirvaanaa-offwhite px-4 py-8 flex flex-col items-center justify-center">
+      <motion.h1 initial={{ opacity: 0, y: -30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }} className={`${playfair.className} text-4xl md:text-5xl font-bold mb-6 text-center text-[rgb(7,30,201)]`}>Welcome to Nirvaanaa</motion.h1>
+      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className={`${inter.className} mb-8 text-lg text-[rgb(7,30,201)] italic text-center`}>Step into a world where every sign-in is a verse, and every user is a cherished guest.</motion.p>
+      <div className="text-[rgb(7,30,201)]p-8 rounded-xl shadow-lg flex flex-col gap-4 w-full max-w-md">
         {!showCredentials && (
           <>
             <button onClick={() => signIn('google', { callbackUrl: '/' })} className="flex items-center gap-2 bg-[#bfae9e] text-white py-2 px-4 rounded-lg font-semibold hover:bg-[#7c6a58] transition">
@@ -70,52 +70,67 @@ export default function SignInPage() {
   <path fill="#ffffff" d="M24 4C12.95 4 4 12.95 4 24c0 9.95 7.25 18.2 16.75 19.75V30.9h-5.05v-6.9h5.05v-5.25c0-5 3-7.75 7.5-7.75 2.15 0 4.4.4 4.4.4v4.85h-2.5c-2.45 0-3.2 1.5-3.2 3v3.75h5.45l-.9 6.9h-4.55v12.85C36.75 42.2 44 33.95 44 24c0-11.05-8.95-20-20-20z"/>
 </svg>
 
-              Sign in with Facebook
-            </button>
-            <button onClick={() => setShowCredentials(true)} className="flex items-center gap-2 bg-[#bfae9e] text-white py-2 px-4 rounded-lg font-semibold hover:bg-[#7c6a58] transition">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 48 48">
-  <rect x="12" y="20" width="24" height="20" rx="2" fill="#ffffff"/>
-  <path fill="#ffffff" d="M24 28a2 2 0 1 0 0 4v4h4v-4a2 2 0 1 0-4-4z"/>
-  <path fill="#ffffff" d="M16 20v-4a8 8 0 0 1 16 0v4h-4v-4a4 4 0 0 0-8 0v4z"/>
-</svg>
+              
 
               Sign in with Credentials
             </button>
           </>
         )}
         {showCredentials && (
-          <form onSubmit={handleCredentialsSignIn} className="flex flex-col gap-4">
+          <form onSubmit={handleCredentialsSignIn} className="flex bg-none flex-col gap-4">
+
             <input
               type="email"
               placeholder="Email"
               value={email}
               onChange={e => setEmail(e.target.value)}
               required
-              className="p-2 rounded-lg border"
+              className="p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#bfae9e]"
             />
+
             <input
               type="password"
               placeholder="Password"
               value={password}
               onChange={e => setPassword(e.target.value)}
               required
-              className="p-2 rounded-lg border"
+              className="p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#bfae9e]"
             />
-            <button type="submit" disabled={loading} className="bg-[#bfae9e] text-white py-2 px-4 rounded-lg font-semibold hover:bg-[#7c6a58] transition">
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="bg-[#bfae9e] text-white py-3 rounded-lg font-semibold hover:bg-[#7c6a58] transition disabled:opacity-50"
+            >
               {loading ? "Signing in..." : "Sign in"}
             </button>
-            <button type="button" onClick={() => setShowCredentials(false)} className="text-[#7c6a58] underline">Back</button>
-            <Link href="/auth/forgot-password" className="text-[#7c6a58] underline text-sm text-center">
+
+            <button
+              type="button"
+              onClick={() => setShowCredentials(false)}
+              className="text-[#7c6a58] underline text-center"
+            >
+              Back
+            </button>
+
+            <Link
+              href="/auth/forgot-password"
+              className="text-[#7c6a58] underline text-center text-sm"
+            >
               Forgot Password?
             </Link>
-            {error && <div className="text-red-500 text-sm text-center">{error}</div>}
-            {errorParam && <div className="text-red-500 text-sm text-center">{errorParam}</div>}
-          </form>
-        )}
+
+            {(error || errorParam) && (
+              <div className="text-red-600 text-center text-sm">
+                {error || errorParam}
+              </div>
+            )}
+
+  </form>
+)}
+
       </div>
-      <svg width="100%" height="40" viewBox="0 0 1440 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="mt-8">
-        <path d="M0,20 C480,60 960,-20 1440,20 L1440,40 L0,40 Z" fill="#e3e0d9" />
-      </svg>
+      
     </main>
   );
 }

@@ -97,7 +97,7 @@ export default function EnhancedCartPage() {
 
   if (!session) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#f5f3ea] to-[#e3e0d9] flex items-center justify-center">
+    <div className="min-h-screen bg-nirvaanaa-offwhite flex items-center justify-center">
         <div className="text-center">
           <FaShoppingBag className="w-16 h-16 text-[#7c6a58] mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-[#7c6a58] mb-2">Sign in to view your cart</h2>
@@ -114,7 +114,7 @@ export default function EnhancedCartPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#f5f3ea] to-[#e3e0d9] flex items-center justify-center">
+    <div className="min-h-screen bg-nirvaanaa-offwhite flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7c6a58] mx-auto mb-4"></div>
           <p className="text-gray-600">Loading your cart...</p>
@@ -141,7 +141,7 @@ export default function EnhancedCartPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#f5f3ea] to-[#e3e0d9] py-8">
+    <div className="min-h-screen bg-nirvaanaa-offwhite py-8">
       <div className="max-w-6xl mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: -20 }}

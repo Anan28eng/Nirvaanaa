@@ -1,4 +1,3 @@
-
 import { Inter, Playfair_Display } from 'next/font/google';
 import './globals.css';
 import { Toaster } from 'react-hot-toast';
@@ -96,11 +95,11 @@ export default function RootLayout({ children }) {
         <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png"/>
        
                      <link rel="manifest" href="/site.webmanifest" />
-        <meta name="theme-color" content="#f5f1eb" />
+        <meta name="theme-color" content="rgb(7, 30, 201)" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
         <meta name="mobile-web-app-capable" content="yes" />
       </head>
-      <body className={`${inter.className} antialiased bg-brand-cream text-gray-900`}>
+      <body className={`${inter.className} antialiased bg-nirvaanaa-shell text-gray-900`}>
         <QueryProvider>
           <AuthProvider>
             <EnhancedCartProvider>
@@ -117,20 +116,22 @@ export default function RootLayout({ children }) {
                   toastOptions={{
                     duration: 4000,
                     style: {
-                      background: '#f5f1eb',
-                      color: '#8b4513',
-                      border: '1px solid #d4af37',
+                      background: 'white',
+                      color: 'rgb(7, 30, 201)',
+                      border: '1px solid rgb(165, 227, 249)',
+                      borderRadius: '12px',
+                      boxShadow: '0 4px 12px rgba(7, 30, 201, 0.25)',
                     },
                     success: {
                       iconTheme: {
-                        primary: '#8b4513',
-                        secondary: '#f5f1eb',
+                        primary: 'rgb(7, 30, 201)',
+                        secondary: 'rgb(165, 227, 249)',
                       },
                     },
                     error: {
                       iconTheme: {
                         primary: '#dc2626',
-                        secondary: '#f5f1eb',
+                        secondary: 'rgb(165, 227, 249)',
                       },
                     },
                   }}

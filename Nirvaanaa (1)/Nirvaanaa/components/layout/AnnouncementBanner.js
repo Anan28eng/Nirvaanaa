@@ -65,8 +65,7 @@ export default function AnnouncementBanner({ banner }) {
         initial={{ height: 0, opacity: 0 }}
         animate={{ height: 'auto', opacity: 1 }}
         exit={{ height: 0, opacity: 0 }}
-        className="w-full block relative overflow-hidden"
-        style={{ backgroundColor: announcement.backgroundColor || '#f59e0b', color: announcement.textColor || '#ffffff' }}
+        className="w-full block relative overflow-hidden bg-nirvaanaa-primary text-nirvaanaa-secondary"
       >
         <div className="w-full">
           <div className="max-w-7xl mx-auto px-4">

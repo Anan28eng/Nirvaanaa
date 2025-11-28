@@ -159,28 +159,28 @@ export function generateHtmlInvoice(order, user, shippingMethodLabel) {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       line-height: 1.6;
       color: #333;
-      background: #f5f5f5;
+      background: var(--nirvaanaa-shell);
       padding: 20px;
     }
     .invoice-container {
       max-width: 800px;
       margin: 0 auto;
-      background: white;
+      background: var(--nirvaanaa-primary-light);
       padding: 40px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      box-shadow: var(--nirvaanaa-shadow-soft);
     }
     .header {
-      border-bottom: 3px solid #7c6a58;
+      border-bottom: 3px solid var(--nirvaanaa-secondary-dark);
       padding-bottom: 20px;
       margin-bottom: 30px;
     }
     .header h1 {
-      color: #7c6a58;
+      color: var(--nirvaanaa-secondary-dark);
       font-size: 32px;
       margin-bottom: 10px;
     }
     .header p {
-      color: #666;
+      color: var(--nirvaanaa-secondary-light);
       font-size: 14px;
     }
     .invoice-info {
@@ -190,7 +190,7 @@ export function generateHtmlInvoice(order, user, shippingMethodLabel) {
       margin-bottom: 30px;
     }
     .info-section h3 {
-      color: #7c6a58;
+      color: var(--nirvaanaa-secondary-dark);
       font-size: 16px;
       margin-bottom: 10px;
       border-bottom: 1px solid #eee;
@@ -206,7 +206,7 @@ export function generateHtmlInvoice(order, user, shippingMethodLabel) {
       margin: 30px 0;
     }
     .items-table th {
-      background: #7c6a58;
+      background: var(--nirvaanaa-secondary);
       color: white;
       padding: 12px;
       text-align: left;
@@ -217,11 +217,11 @@ export function generateHtmlInvoice(order, user, shippingMethodLabel) {
       border-bottom: 1px solid #ddd;
     }
     .items-table tr:hover {
-      background: #f9f9f9;
+      background: var(--nirvaanaa-primary-light);
     }
     .totals {
       margin-top: 30px;
-      border-top: 2px solid #7c6a58;
+      border-top: 2px solid var(--nirvaanaa-secondary-dark);
       padding-top: 20px;
     }
     .total-row {
@@ -233,8 +233,8 @@ export function generateHtmlInvoice(order, user, shippingMethodLabel) {
     .total-row.final {
       font-size: 24px;
       font-weight: bold;
-      color: #7c6a58;
-      border-top: 2px solid #7c6a58;
+      color: var(--nirvaanaa-secondary-dark);
+      border-top: 2px solid var(--nirvaanaa-secondary-dark);
       padding-top: 15px;
       margin-top: 10px;
     }

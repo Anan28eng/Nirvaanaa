@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import KPIChart from './KPIChart';
 import KPISection from './KPISection';
 import { useSession } from 'next-auth/react';
@@ -75,6 +75,12 @@ const fetchAnalytics = async (dateRange = 'month') => {
   return res.json();
 };
 
+const fetchReturns = async () => {
+  const res = await fetch('/api/returns');
+  if (!res.ok) throw new Error('Failed to fetch returns');
+  return res.json();
+};
+
 export default function EnhancedAdminDashboard() {
   const { data: session } = useSession();
   const queryClient = useQueryClient();
@@ -110,6 +116,7 @@ export default function EnhancedAdminDashboard() {
   const [dateRange, setDateRange] = useState('month');
   const [selectedChart, setSelectedChart] = useState('bar');
   const [isLoading, setIsLoading] = useState(false);
+  const [returnsList, setReturnsList] = useState([]);
 
   // Queries
   const { data: productsData, isLoading: productsLoading } = useQuery({
@@ -140,6 +147,12 @@ export default function EnhancedAdminDashboard() {
     queryKey: ['analytics', dateRange],
     queryFn: () => fetchAnalytics(dateRange),
     refetchInterval: 60000, // Refetch every minute
+  });
+
+  const { data: returnsData, isLoading: returnsLoading } = useQuery({
+    queryKey: ['returns'],
+    queryFn: fetchReturns,
+    refetchInterval: 60000,
   });
 
   // Mutations
@@ -276,6 +289,12 @@ export default function EnhancedAdminDashboard() {
       setAnalytics(analyticsData);
     }
   }, [analyticsData, setAnalytics]);
+
+  useEffect(() => {
+    if (returnsData?.returns) {
+      setReturnsList(returnsData.returns);
+    }
+  }, [returnsData]);
 
   // Product form state
   const [newProduct, setNewProduct] = useState({
@@ -664,6 +683,105 @@ export default function EnhancedAdminDashboard() {
       title: { display: true, text: 'Sales Analytics' },
     },
   };
+
+  const orderStatusSummary = useMemo(() => {
+    const summary = {
+      total: orders?.length || 0,
+      pending: 0,
+      processing: 0,
+      shipped: 0,
+      delivered: 0,
+      cancelled: 0,
+      refunded: 0,
+      paid: 0,
+    };
+
+    (orders || []).forEach((order) => {
+      const statusKey = order.status || 'pending';
+      summary[statusKey] = (summary[statusKey] || 0) + 1;
+      if (order.paymentStatus === 'paid') {
+        summary.paid += 1;
+      }
+    });
+
+    return summary;
+  }, [orders]);
+
+  const returnsSummary = useMemo(() => {
+    const summary = {
+      total: returnsList.length || 0,
+      pending: 0,
+      approved: 0,
+      processing: 0,
+      completed: 0,
+      rejected: 0,
+    };
+
+    returnsList.forEach((request) => {
+      const statusKey = request.status || 'pending';
+      summary[statusKey] = (summary[statusKey] || 0) + 1;
+    });
+
+    return summary;
+  }, [returnsList]);
+
+  const latestReturns = useMemo(() => returnsList.slice(0, 4), [returnsList]);
+  const recentOrders = useMemo(() => (orders || []).slice(0, 5), [orders]);
+  const fulfillmentStages = useMemo(() => {
+    const total = orderStatusSummary.total || 0;
+    const baseStages = [
+      { label: 'Pending', key: 'pending', barColor: 'bg-yellow-400' },
+      { label: 'Processing', key: 'processing', barColor: 'bg-amber-500' },
+      { label: 'Shipped', key: 'shipped', barColor: 'bg-sky-500' },
+      { label: 'Delivered', key: 'delivered', barColor: 'bg-emerald-500' },
+      { label: 'Cancelled', key: 'cancelled', barColor: 'bg-rose-500' },
+    ];
+
+    return baseStages.map((stage) => {
+      const value = orderStatusSummary[stage.key] || 0;
+      return {
+        ...stage,
+        value,
+        percent: total ? Math.round((value / total) * 100) : 0,
+      };
+    });
+  }, [orderStatusSummary]);
+
+  const fulfillmentCards = useMemo(() => ([
+    {
+      label: 'Orders placed',
+      value: orderStatusSummary.total || 0,
+      sublabel: `${orderStatusSummary.paid || 0} paid orders`,
+    },
+    {
+      label: 'Shipped this week',
+      value: orderStatusSummary.shipped || 0,
+      sublabel: `${orderStatusSummary.delivered || 0} delivered`,
+    },
+    {
+      label: 'Returns pending',
+      value: returnsSummary.pending || 0,
+      sublabel: `${returnsSummary.total || 0} total requests`,
+    },
+  ]), [orderStatusSummary, returnsSummary]);
+
+  const returnStatusColors = {
+    pending: 'bg-yellow-100 text-yellow-800',
+    processing: 'bg-indigo-100 text-indigo-800',
+    approved: 'bg-blue-100 text-blue-800',
+    completed: 'bg-emerald-100 text-emerald-800',
+    rejected: 'bg-rose-100 text-rose-800',
+  };
+
+  const formatDate = (dateValue) => {
+    if (!dateValue) return '—';
+    try {
+      return new Date(dateValue).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' });
+    } catch {
+      return '—';
+    }
+  };
+  const lastUpdated = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
   
   // Chart selection renderer
   const renderChart = () => {
@@ -683,14 +801,14 @@ export default function EnhancedAdminDashboard() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-[#f5f3ea] to-[#e3e0d9] px-4 py-8">
+    <main className="min-h-screen page-gradient px-4 py-8">
       <motion.div
         initial={{ opacity: 0, y: -30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7 }}
         className="max-w-7xl mx-auto"
       >
-        <h1 className={`${playfair.className} text-4xl md:text-5xl font-bold mb-8 text-center bg-clip-text text-transparent bg-gradient-to-r from-[#bfae9e] to-[#7c6a58]`}>
+        <h1 className={`${playfair.className} text-4xl md:text-5xl font-bold mb-8 text-center bg-clip-text text-nirvaanaa-secondary`}>
            Admin Dashboard
         </h1>
 
@@ -699,26 +817,19 @@ export default function EnhancedAdminDashboard() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
-          className="mb-8 p-4 bg-green-50 border border-green-200 rounded-lg"
+          className="mb-8 surface-panel p-5 flex items-center justify-between"
         >
-          <div className="flex items-center justify-between">
-            <span className="text-green-800 font-medium">Real-time Updates Active</span>
-            <div className="flex space-x-2">
-              <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-green-600 text-sm">Live</span>
+          <div>
+            <p className="text-sm uppercase tracking-[0.35em] text-nirvaanaa-secondary/70 mb-1">Live sync</p>
+            <span className="text-nirvaanaa-secondary font-semibold">Real-time updates active</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="flex space-x-2 items-center">
+              <div className="w-3 h-3 bg-emerald-500 rounded-full animate-pulse" />
+              <span className="text-emerald-700 text-sm">Connected</span>
             </div>
           </div>
         </motion.div>
-
-        {/* CSS for form inputs */}
-        <style jsx>{`
-          .input {
-            @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#bfae9e] focus:border-transparent transition-all duration-200;
-          }
-          .glassmorphism {
-            @apply bg-white bg-opacity-80 backdrop-blur-sm border border-white border-opacity-20;
-          }
-        `}</style>
 
         {/* KPIs - realtime section (delegated to KPISection component) */}
         <motion.div
@@ -731,7 +842,124 @@ export default function EnhancedAdminDashboard() {
         </motion.div>
 
         {/* Create KPI Form */}
-        
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.35 }}
+          className="glassmorphism p-6 rounded-xl shadow-lg mb-8"
+        >
+          <div className="flex flex-col gap-2 mb-6">
+            <p className="text-xs uppercase tracking-[0.4em] text-nirvaanaa-secondary/70">
+              Fulfillment tracker
+            </p>
+            <div className="flex items-center justify-between flex-wrap gap-4">
+              <h2 className={`${playfair.className} text-2xl text-nirvaanaa-secondary`}>
+                Orders, shipments & returns at a glance
+              </h2>
+              <span className="text-sm text-gray-500">Last synced · {lastUpdated}</span>
+            </div>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-3 mb-6">
+            {fulfillmentCards.map((card) => (
+              <div
+                key={card.label}
+                className="bg-white/80 rounded-2xl border border-white/60 p-5 shadow-soft backdrop-blur"
+              >
+                <p className="text-sm text-gray-500">{card.label}</p>
+                <p className="text-3xl font-playfair text-nirvaanaa-secondary mt-2">{card.value}</p>
+                <p className="text-xs text-gray-500 mt-1">{card.sublabel}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="grid gap-6 lg:grid-cols-2">
+            <div className="bg-white/80 rounded-2xl border border-white/60 p-5 shadow-soft">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800">Order pipeline</h3>
+                  <p className="text-xs text-gray-500">Live overview of customer orders</p>
+                </div>
+                <span className="text-xs px-3 py-1 rounded-full bg-nirvaanaa-primary-light text-nirvaanaa-secondary">
+                  {orderStatusSummary.total || 0} active
+                </span>
+              </div>
+              <div className="space-y-4">
+                {fulfillmentStages.map((stage) => (
+                  <div key={stage.label}>
+                    <div className="flex items-center justify-between text-sm mb-2">
+                      <span className="font-medium text-gray-700">{stage.label}</span>
+                      <span className="text-gray-500">{stage.value} · {stage.percent}%</span>
+                    </div>
+                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                      <div
+                        className={`h-full rounded-full transition-all duration-500 ${stage.barColor}`}
+                        style={{ width: `${stage.percent}%` }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="bg-white/80 rounded-2xl border border-white/60 p-5 shadow-soft">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800">Return requests</h3>
+                  <p className="text-xs text-gray-500">Latest customer submissions</p>
+                </div>
+                <span className="text-xs px-3 py-1 rounded-full bg-nirvaanaa-primary-light text-nirvaanaa-secondary">
+                  {returnsSummary.total || 0} total
+                </span>
+              </div>
+              <div className="flex flex-wrap gap-2 mb-4">
+                {['pending', 'processing', 'approved', 'completed'].map((statusKey) => (
+                  <span
+                    key={statusKey}
+                    className="text-xs px-3 py-1 rounded-full bg-nirvaanaa-primary-lighter text-nirvaanaa-secondary"
+                  >
+                    {statusKey} · {returnsSummary[statusKey] || 0}
+                  </span>
+                ))}
+              </div>
+              {returnsLoading ? (
+                <div className="space-y-3">
+                  {Array.from({ length: 3 }).map((_, idx) => (
+                    <div key={idx} className="h-16 bg-gray-100 rounded-xl animate-pulse" />
+                  ))}
+                </div>
+              ) : latestReturns.length > 0 ? (
+                <div className="space-y-3">
+                  {latestReturns.map((request) => (
+                    <div key={request._id} className="p-4 border border-gray-100 rounded-xl bg-white/70">
+                      <div className="flex items-start justify-between gap-4">
+                        <div>
+                          <p className="font-medium text-gray-800">
+                            {request.orderId?.orderNumber || 'Order'}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {request.userId?.name || 'Customer'} · {formatDate(request.createdAt)}
+                          </p>
+                        </div>
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-medium ${returnStatusColors[request.status] || 'bg-gray-100 text-gray-600'}`}
+                        >
+                          {request.status?.replace(/-/g, ' ') || 'pending'}
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-600 mt-2">
+                        {request.returnReason}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500">No return requests yet.</p>
+              )}
+            </div>
+          </div>
+        </motion.div>
 
         {/* Banner Management */}
         <BannerProvider>
@@ -913,7 +1141,7 @@ export default function EnhancedAdminDashboard() {
       {newProduct.tags.map((tag) => (
         <span
           key={tag}
-          className="inline-flex items-center gap-1 px-2 py-1 bg-[#bfae9e] text-white text-xs rounded-full"
+          className="inline-flex items-center gap-1 px-2 py-1 bg-nirvaanaa-secondary text-white text-xs rounded-full"
         >
           {tag}
           <button
@@ -950,7 +1178,7 @@ export default function EnhancedAdminDashboard() {
         className={`px-2 py-1 text-xs rounded-full transition-colors ${
           newProduct.tags.includes(tag)
             ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-            : 'bg-brand-gold text-white hover:bg-[#7c6a58] cursor-pointer'
+            : 'bg-nirvaanaa-secondary text-white hover:bg-nirvaanaa-secondary-dark cursor-pointer'
         }`}
       >
         {tag}
@@ -1199,7 +1427,7 @@ export default function EnhancedAdminDashboard() {
                 <button
                   type="submit"
                   disabled={createProductMutation.isPending}
-                  className="px-8 py-3 bg-[#bfae9e] text-white rounded-lg hover:bg-[#7c6a58] transition-colors disabled:opacity-50 font-medium flex items-center gap-2"
+                  className="px-8 py-3 btn-primary disabled:opacity-50 font-medium flex items-center gap-2"
                 >
                   {createProductMutation.isPending ? (
                     <>
@@ -1216,7 +1444,7 @@ export default function EnhancedAdminDashboard() {
 
           {/* Edit Product Form */}
           {editingProduct && (
-            <div id="edit-product-form" className="bg-white rounded-xl shadow-sm p-6 mb-6 border-2 border-[#bfae9e]">
+            <div id="edit-product-form" className="bg-white rounded-xl shadow-sm p-6 mb-6 border-2 border-nirvaanaa-primary">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold text-gray-800">Edit Product</h3>
                 <button
@@ -1367,7 +1595,7 @@ export default function EnhancedAdminDashboard() {
                   <button
                     type="submit"
                     disabled={updateProductMutation.isPending}
-                    className="px-8 py-3 bg-[#bfae9e] text-white rounded-lg hover:bg-[#7c6a58] transition-colors disabled:opacity-50 font-medium flex items-center gap-2"
+                    className="px-8 py-3 btn-primary disabled:opacity-50 font-medium flex items-center gap-2"
                   >
                     {updateProductMutation.isPending ? (
                       <>
@@ -1413,7 +1641,7 @@ export default function EnhancedAdminDashboard() {
                     <button
                       onClick={() => handleEditProduct(product)}
                       disabled={editingProduct === product._id}
-                      className="flex-1 px-3 py-2 bg-[#bfae9e] text-white text-sm rounded-lg hover:bg-[#7c6a58] transition-colors disabled:opacity-50"
+                      className="flex-1 px-3 py-2 btn-primary text-sm disabled:opacity-50"
                     >
                       {editingProduct === product._id ? 'Editing...' : 'Edit'}
                     </button>
@@ -1447,10 +1675,10 @@ export default function EnhancedAdminDashboard() {
                 ))
               ) : (
                 orders?.slice(0, 5).map((order) => (
-                  <div key={order._id} className="flex justify-between items-center bg-[#f7f4ed] p-3 rounded-lg">
+                  <div key={order._id} className="flex justify-between items-center bg-nirvaanaa-primary-lighter p-3 rounded-lg">
                     <span className={`${inter.className}`}>{order.orderNumber}</span>
-                    <span className="text-xs text-[#7c6a58]">₹{order.total}</span>
-                    <span className="text-xs text-[#7c6a58]">{order.status}</span>
+                    <span className="text-xs text-nirvaanaa-secondary">₹{order.total}</span>
+                    <span className="text-xs text-nirvaanaa-secondary">{order.status}</span>
                   </div>
                 ))
               )}
@@ -1471,9 +1699,9 @@ export default function EnhancedAdminDashboard() {
                 ))
               ) : (
                 customers?.slice(0, 5).map((customer) => (
-                  <div key={customer._id} className="flex justify-between items-center bg-[#f7f4ed] p-3 rounded-lg">
+                  <div key={customer._id} className="flex justify-between items-center bg-nirvaanaa-primary-lighter p-3 rounded-lg">
                     <span className={`${inter.className}`}>{customer.name}</span>
-                    <span className="text-xs text-[#7c6a58]">{customer.email}</span>
+                    <span className="text-xs text-nirvaanaa-secondary">{customer.email}</span>
                   </div>
                 ))
               )}
@@ -1553,11 +1781,11 @@ function ShippingManagementSection() {
     estimatedDays: {
       min: '',
       max: '',
-      gstPercent: '',
     },
     freeShippingThreshold: '',
     isActive: true,
     isDefault: false,
+    gstPercent: '',
   });
 
   useEffect(() => {
@@ -1742,7 +1970,7 @@ function ShippingManagementSection() {
 
         <button
           type="submit"
-          className="px-4 py-2 bg-[#bfae9e] text-white rounded-lg hover:bg-[#7c6a58] transition-colors"
+          className="px-4 py-2 btn-primary"
         >
           Create Shipping Method
         </button>

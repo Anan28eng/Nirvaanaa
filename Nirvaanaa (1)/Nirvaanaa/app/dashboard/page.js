@@ -60,7 +60,7 @@ export default function UserDashboard() {
   }, [session]);
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-[#f5f3ea] to-[#e3e0d9] px-4 py-8 flex flex-col items-center">
+    <main className="min-h-screen bg-nirvaanaa-offwhite px-4 py-8 flex flex-col items-center">
       <motion.h1 initial={{ opacity: 0, y: -30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }} className={`${playfair.className} text-4xl md:text-5xl font-bold mb-6 text-center bg-clip-text text-transparent bg-gradient-to-r from-[#bfae9e] to-[#7c6a58]`}>Hello, {session?.user?.name || 'Guest'}</motion.h1>
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="w-full max-w-2xl grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <motion.div className="glassmorphism p-6 rounded-xl shadow-lg" whileHover={{ scale: 1.03 }}>

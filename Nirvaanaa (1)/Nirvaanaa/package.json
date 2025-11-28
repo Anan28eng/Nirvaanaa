@@ -16,7 +16,8 @@
     "seed": "node scripts/seed.js",
     "seed:products": "node scripts/seed_products_from_template.js",
     "format": "prettier --write .",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "check:backgrounds": "node scripts/checkBackgrounds.js"
   },
   "dependencies": {
     "@stripe/react-stripe-js": "^5.3.0",

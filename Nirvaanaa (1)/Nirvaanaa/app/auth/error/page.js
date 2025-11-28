@@ -18,7 +18,7 @@ export default function AuthErrorPage() {
   const message = errorMessages[error] || errorMessages.default;
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#f5f3ea] to-[#e3e0d9] px-4 py-8">
+        <main className="min-h-screen flex flex-col items-center justify-center bg-nirvaanaa-offwhite px-4 py-8">
       <h1 className={`${playfair.className} text-3xl font-bold mb-4 text-[#7c6a58]`}>Sign In Error</h1>
       <div className="glassmorphism p-6 rounded-xl shadow-lg max-w-md w-full text-center">
         <p className={`${inter.className} text-lg text-[#bfae9e] mb-4`}>{message}</p>

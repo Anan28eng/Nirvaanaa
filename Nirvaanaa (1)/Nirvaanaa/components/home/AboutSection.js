@@ -13,7 +13,7 @@ const AboutSection = () => {
   ];
 
   return (
-    <section className="bg-cream-50">
+    <section className="bg-nirvaanaa-offwhite">
       <div className="container mx-auto">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Content */}
@@ -157,71 +157,9 @@ const AboutSection = () => {
         </div>
 
         {/* Values Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.8 }}
-          className="mt-20"
-        >
-          <div className="mt-20 text-center ">
-            <h3 className="text-2xl sm:text-3xl font-playfair font-bold text-brand-brown ">
-              Our Values
-            </h3>
-            <p className="text-brand-brown max-w-2xl mx-auto">
-              We are committed to quality, sustainability, and preserving the art of hand embroidery.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                icon: (
-                  <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                  </svg>
-                ),
-                title: 'Artisan Craftsmanship',
-                description: 'Every piece is handcrafted by skilled artisans with years of experience in traditional embroidery techniques.'
-              },
-              {
-                icon: (
-                  <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                  </svg>
-                ),
-                title: 'Quality Materials',
-                description: 'We use only the finest fabrics and threads, ensuring each piece is both beautiful and durable.'
-              },
-              {
-                icon: (
-                  <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9m0-9c-5 0-9 4-9 9s4 9 9 9" />
-                  </svg>
-                ),
-                title: 'Sustainable Practices',
-                description: 'We are committed to sustainable practices, from sourcing materials to packaging and shipping.'
-              }
-            ].map((value, index) => (
-              <motion.div
-                key={value.title}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 1 + index * 0.1 }}
-                className="text-center p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow"
-              >
-                <div className="text-brand-gold mb-4 flex justify-center">
-                  {value.icon}
-                </div>
-                <h4 className="text-xl font-semibold text-brand-brown mb-3">
-                  {value.title}
-                </h4>
-                <p className="text-brand-brown  leading-relaxed">
-                  {value.description}
-                </p>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
+        
+            
+          
       </div>
     </section>
   );

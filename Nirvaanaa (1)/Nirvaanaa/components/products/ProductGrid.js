@@ -80,10 +80,11 @@ const ProductCard = ({ product }) => {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -5 }}
-      className="group relative bg-white rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden"
+      whileHover={{ y: -8 }}
+      className="group relative bg-white rounded-xl shadow-soft hover:shadow-nirvaanaa-hover transition-all duration-300 overflow-hidden border border-nirvaanaa-primary/10"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      style={{ boxShadow: '0 2px 8px rgba(7, 30, 201, 0.08)' }}
     >
       <Link href={`/products/${liveProduct.slug}`} className="block">
         {/* Product Image */}
@@ -112,16 +113,16 @@ const ProductCard = ({ product }) => {
             <button
               onClick={handleAddToCart}
               disabled={isLoading}
-              className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-brand-gold transition-colors"
+              className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-nirvaanaa-secondary hover:text-white transition-all duration-300"
             >
               {isLoading ? (
-                <div className="w-5 h-5 border-2 border-brand-gold border-t-transparent rounded-full animate-spin" />
+                <div className="w-5 h-5 border-2 border-nirvaanaa-secondary border-t-transparent rounded-full animate-spin" />
               ) : (
-                <FiShoppingCart className="w-5 h-5 text-brand-brown" />
+                <FiShoppingCart className="w-5 h-5 text-nirvaanaa-secondary" />
               )}
             </button>
-            <button className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-brand-gold transition-colors">
-              <FiHeart className="w-5 h-5 text-brand-brown" />
+            <button className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-nirvaanaa-primary hover:text-nirvaanaa-secondary transition-all duration-300">
+              <FiHeart className="w-5 h-5 text-nirvaanaa-secondary" />
             </button>
             <button
               onClick={(e) => {
@@ -130,9 +131,9 @@ const ProductCard = ({ product }) => {
                 e.stopPropagation();
                 router.push(`/products/${liveProduct.slug}`);
               }}
-              className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-brand-gold transition-colors"
+              className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-nirvaanaa-primary hover:text-nirvaanaa-secondary transition-all duration-300"
             >
-              <FiEye className="w-5 h-5 text-brand-brown" />
+              <FiEye className="w-5 h-5 text-nirvaanaa-secondary" />
             </button>
           </motion.div>
 
@@ -146,7 +147,7 @@ const ProductCard = ({ product }) => {
             {liveProduct.tags && liveProduct.tags.length > 0 && (
               <div className="flex flex-wrap gap-1">
                 {liveProduct.tags.slice(0, 2).map((tag, index) => (
-                  <div key={index} className="bg-brand-gold text-white text-xs font-semibold px-2 py-1 rounded-full">
+                  <div key={index} className="bg-nirvaanaa-secondary text-white text-xs font-semibold px-2 py-1 rounded-full">
                     {tag}
                   </div>
                 ))}
@@ -159,7 +160,7 @@ const ProductCard = ({ product }) => {
             )}
           </div>
           {liveProduct.featured && (
-            <div className="absolute top-3 right-3 bg-brand-gold text-white text-xs font-semibold px-2 py-1 rounded-full">
+            <div className="absolute top-3 right-3 bg-nirvaanaa-primary text-nirvaanaa-secondary text-xs font-semibold px-2 py-1 rounded-full">
               Featured
             </div>
           )}
@@ -167,7 +168,7 @@ const ProductCard = ({ product }) => {
 
         {/* Product Info */}
         <div className="p-4">
-          <h3 className="font-semibold text-brand-brown mb-2 line-clamp-2 group-hover:text-brand-gold transition-colors">
+          <h3 className="font-semibold text-nirvaanaa-secondary mb-2 line-clamp-2 group-hover:text-nirvaanaa-primary transition-colors duration-300">
             {liveProduct.title}
           </h3>
           
@@ -175,7 +176,7 @@ const ProductCard = ({ product }) => {
             <div className="flex items-center gap-2">
               {liveProduct.discount > 0 ? (
                 <>
-                  <span className="text-lg font-bold text-brand-brown">
+                  <span className="text-lg font-bold text-nirvaanaa-secondary">
                     {formatPrice(liveProduct.price * (1 - liveProduct.discount / 100))}
                   </span>
                   <span className="text-sm text-gray-500 line-through">
@@ -183,7 +184,7 @@ const ProductCard = ({ product }) => {
                   </span>
                 </>
               ) : (
-                <span className="text-lg font-bold text-brand-brown">
+                <span className="text-lg font-bold text-nirvaanaa-secondary">
                   {formatPrice(liveProduct.price)}
                 </span>
               )}
@@ -191,7 +192,7 @@ const ProductCard = ({ product }) => {
             
             {/* Rating */}
             <div className="flex items-center gap-1">
-              <div className="flex text-brand-gold">
+              <div className="flex text-nirvaanaa-primary">
                 {[...Array(5)].map((_, i) => (
                   <svg
                     key={i}
@@ -423,7 +424,7 @@ const ProductGrid = ({ searchParams }) => {
                 <button
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
-                  className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                  className="px-4 py-2 border border-nirvaanaa-primary/30 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-nirvaanaa-primary-lighter hover:border-nirvaanaa-primary text-nirvaanaa-secondary transition-all duration-300"
                 >
                   Previous
                 </button>
@@ -438,10 +439,10 @@ const ProductGrid = ({ searchParams }) => {
                       <button
                         key={page}
                         onClick={() => handlePageChange(page)}
-                        className={`px-4 py-2 rounded-lg ${
+                        className={`px-4 py-2 rounded-lg transition-all duration-300 ${
                           isActive 
-                            ? 'bg-brand-gold text-white' 
-                            : 'border border-gray-300 hover:bg-gray-50'
+                            ? 'bg-nirvaanaa-secondary text-white shadow-nirvaanaa' 
+                            : 'border border-nirvaanaa-primary/30 hover:bg-nirvaanaa-primary-lighter hover:border-nirvaanaa-primary text-nirvaanaa-secondary'
                         }`}
                       >
                         {page}

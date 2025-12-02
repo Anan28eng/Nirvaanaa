@@ -2,10 +2,23 @@ const { Server } = require('socket.io');
 
 let io;
 
+const SOCKET_DISABLED = process.env.DISABLE_SOCKET === 'true' || process.env.NODE_ENV === 'production';
+
 const initSocket = (server) => {
+  if (SOCKET_DISABLED) {
+    console.warn('[lib/socket] Socket.io is disabled in this environment.');
+    // provide a minimal stub so imports don't break
+    io = null;
+    return {
+      toString: () => '[socket-disabled]',
+    };
+  }
+
+  const origin = process.env.NEXT_PUBLIC_API_URL || process.env.NEXTAUTH_URL || 'https://nirvaanaa.in';
+
   io = new Server(server, {
     cors: {
-      origin: process.env.NEXTAUTH_URL || 'http://localhost:3000',
+      origin,
       methods: ['GET', 'POST'],
     },
   });

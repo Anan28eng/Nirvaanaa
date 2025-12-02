@@ -11,7 +11,8 @@ function normalizeParam(param) {
 
 async function getProduct(identifier) {
   try {
-    const response = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/products/${identifier}`, {
+    const base = process.env.NEXT_PUBLIC_API_URL || process.env.NEXTAUTH_URL || 'http://localhost:3000';
+    const response = await fetch(`${base}/api/products/${identifier}`, {
       next: { revalidate: 3600 }
     });
 
@@ -27,7 +28,8 @@ async function getProduct(identifier) {
 export async function generateMetadata({ params }) {
   try {
     const identifier = normalizeParam(params.product);
-    const response = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/products/${identifier}`);
+    const base = process.env.NEXT_PUBLIC_API_URL || process.env.NEXTAUTH_URL || 'http://localhost:3000';
+    const response = await fetch(`${base}/api/products/${identifier}`);
     if (!response.ok) {
       return {
         title: 'Product Not Found | Nirvaanaa',

@@ -44,7 +44,8 @@ export async function POST(req) {
     await user.save();
 
     // Create reset URL
-    const resetUrl = `${process.env.NEXTAUTH_URL || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/auth/reset-password?token=${resetToken}`;
+    const base = process.env.NEXT_PUBLIC_API_URL || process.env.NEXTAUTH_URL || process.env.NEXT_PUBLIC_APP_URL || 'https://nirvaanaa.in';
+    const resetUrl = `${base}/auth/reset-password?token=${resetToken}`;
 
     // Send email
     try {

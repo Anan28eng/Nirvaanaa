@@ -38,8 +38,19 @@ export const useSocket = () => {
       socketRef.current = null;
     }
 
+    // Prevent initializing sockets in production if disabled
+    if (process.env.DISABLE_SOCKET === 'true' || process.env.NODE_ENV === 'production') {
+      console.warn('[useSocket] socket disabled in this environment');
+      return () => {};
+    }
+
+    // Determine origin for socket connection. In client-side runtime prefer NEXT_PUBLIC_API_URL or window origin.
+    const origin = (typeof window !== 'undefined' && window.location && window.location.origin)
+      ? window.location.origin
+      : process.env.NEXT_PUBLIC_API_URL || process.env.NEXTAUTH_URL || 'https://nirvaanaa.in';
+
     // Initialize socket connection
-    const socket = io(process.env.NEXTAUTH_URL || 'http://localhost:3000', {
+    const socket = io(origin, {
       autoConnect: false,
       reconnection: true,
       reconnectionAttempts: maxReconnectAttempts,

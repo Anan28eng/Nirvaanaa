@@ -5,6 +5,14 @@ import dbConnect from '@/lib/mongodb';
 import User from '@/models/User';
 import bcrypt from 'bcryptjs';
 
+// Environment guards
+if (!process.env.NEXTAUTH_URL) {
+  console.warn('[lib/auth] NEXTAUTH_URL is not set. Set it to your site URL (e.g. https://nirvaanaa.in)');
+}
+if (!process.env.NEXTAUTH_SECRET) {
+  console.warn('[lib/auth] NEXTAUTH_SECRET is not set. Authentication will be less secure in production.');
+}
+
 export const authOptions = {
   providers: [
     CredentialsProvider({
@@ -177,7 +185,7 @@ export const authOptions = {
       name: `next-auth.session-token`,
       options: {
         httpOnly: true,
-        sameSite: 'lax',
+        sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'lax',
         path: '/',
         secure: process.env.NODE_ENV === 'production', // Only send over HTTPS in production
       },
@@ -186,7 +194,7 @@ export const authOptions = {
       name: `next-auth.callback-url`,
       options: {
         httpOnly: true,
-        sameSite: 'lax',
+        sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'lax',
         path: '/',
         secure: process.env.NODE_ENV === 'production',
       },
@@ -195,7 +203,7 @@ export const authOptions = {
       name: `next-auth.csrf-token`,
       options: {
         httpOnly: true,
-        sameSite: 'lax',
+        sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'lax',
         path: '/',
         secure: process.env.NODE_ENV === 'production',
       },
@@ -203,4 +211,14 @@ export const authOptions = {
   },
   secret: process.env.NEXTAUTH_SECRET,
   debug: process.env.NODE_ENV === 'development',
+  events: {
+    async error(message) {
+      try {
+        console.error('[NextAuth] error event:', message?.error || message);
+        if (message?.error?.stack) console.error(message.error.stack);
+      } catch (e) {
+        console.error('[NextAuth] error logging failed', e);
+      }
+    },
+  },
 };

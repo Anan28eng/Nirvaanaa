@@ -15,11 +15,16 @@ for (const candidate of envCandidates) {
   }
 }
 
-let { MONGODB_URI } = process.env;
+// Prefer DB_URI if provided, fall back to MONGODB_URI for compatibility
+let MONGODB_URI = process.env.DB_URI || process.env.MONGODB_URI;
 if (!MONGODB_URI || !/^mongodb(\+srv)?:\/\//.test(MONGODB_URI)) {
+  // Be explicit: do not silently continue in production without a proper URI
+  if (process.env.NODE_ENV === 'production') {
+    console.error('[lib/mongodb] Missing or invalid DB_URI / MONGODB_URI in production environment.');
+  }
   MONGODB_URI = 'mongodb://127.0.0.1:27017/nirvaanaa';
   process.env.MONGODB_URI = MONGODB_URI;
-  console.warn('[lib/mongodb] MONGODB_URI was missing or invalid, defaulting to local MongoDB instance.');
+  console.warn('[lib/mongodb] DB_URI/MONGODB_URI was missing or invalid, defaulting to local MongoDB instance.');
 }
 
 /**

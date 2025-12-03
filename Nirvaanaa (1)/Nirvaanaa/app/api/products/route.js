@@ -25,106 +25,20 @@ export async function GET(request) {
   try {
     await dbConnect();
 
-    const { searchParams } = new URL(request.url);
-    const page = parsePositiveInt(searchParams.get('page'), 1);
-    const limit = parsePositiveInt(searchParams.get('limit'), 12);
-    if (limit > 200) return NextResponse.json({ error: 'limit too large' }, { status: 400 });
+    // Simple, permissive products endpoint: return all products for the storefront.
+    // Avoid heavy payloads; limit to 2000 documents by default.
+    const rawProducts = await Product.find({}).sort({ createdAt: -1 }).limit(2000).lean({ virtuals: true });
 
-    const category = searchParams.get('category');
-    const search = searchParams.get('search');
-    const sort = searchParams.get('sort') || 'createdAt';
-    const order = searchParams.get('order') || 'desc';
-    const minPrice = searchParams.get('minPrice');
-    const maxPrice = searchParams.get('maxPrice');
-    const tags = searchParams.get('tags');
-    const featured = searchParams.get('featured');
-    const inStock = searchParams.get('inStock');
+    const products = (rawProducts || []).map((p) => ({
+      ...p,
+      id: p._id,
+      name: p.title,
+      mainImage: (p.images && p.images.length > 0) ? p.images[0].url : (p.mainImage || null),
+      inStock: typeof p.stock === 'number' ? p.stock > 0 : false,
+      price: typeof p.price === 'number' ? p.price : Number(p.price || 0),
+    }));
 
-    // Build query
-    const query = { published: true };
-
-    if (category) {
-      if (category === 'bags') {
-        query.category = {
-          $in: ['clutch', 'kitty-bag', 'long-tote-bag', 'picnic-bag', 'potli-purse', 'sling-bags', 'velvet-clutch-with-flaps'],
-        };
-      } else {
-        query.category = category;
-      }
-    }
-
-    if (search) {
-      const sanitizedSearch = String(search).replace(/[.*+?^${}()|[\\]\\]/g, '\\$&');
-      query.$or = [
-        { title: { $regex: sanitizedSearch, $options: 'i' } },
-        { description: { $regex: sanitizedSearch, $options: 'i' } },
-        { tags: { $in: [new RegExp(sanitizedSearch, 'i')] } },
-      ];
-    }
-
-    if (minPrice || maxPrice) {
-      query.price = {};
-      if (minPrice && !Number.isNaN(Number(minPrice))) query.price.$gte = Number(minPrice);
-      if (maxPrice && !Number.isNaN(Number(maxPrice))) query.price.$lte = Number(maxPrice);
-    }
-
-    if (tags) {
-      const tagArray = String(tags).split(',').map((t) => t.trim().toLowerCase()).filter(Boolean);
-      if (tagArray.length) query.tags = { $in: tagArray };
-    }
-
-    if (featured === 'true') query.featured = true;
-    if (inStock === 'true') query.stock = { $gt: 0 };
-
-    const sortObj = {};
-    sortObj[sort] = order === 'desc' ? -1 : 1;
-
-    const skip = (page - 1) * limit;
-
-    const [rawProducts, total, activeDiscounts] = await Promise.all([
-      Product.find(query).sort(sortObj).skip(skip).limit(limit).lean({ virtuals: true }),
-      Product.countDocuments(query),
-      TagDiscount.find({ active: true }).lean(),
-    ]);
-
-    const tagToPercent = new Map();
-    for (const d of activeDiscounts || []) tagToPercent.set(d.tag, d.percent);
-
-    const products = (rawProducts || []).map((p) => {
-      const baseDiscount = typeof p.discount === 'number' ? p.discount : 0;
-      let tagDiscount = 0;
-      if (Array.isArray(p.tags) && p.tags.length) {
-        for (const t of p.tags) {
-          const pct = tagToPercent.get(String(t).toLowerCase());
-          if (typeof pct === 'number') tagDiscount = Math.max(tagDiscount, pct);
-        }
-      }
-      const effectiveDiscount = Math.max(baseDiscount, tagDiscount);
-      return {
-        ...p,
-        id: p._1,
-        name: p.title,
-        mainImage: (p.images && p.images.length > 0) ? p.images[0].url : (p.mainImage || null),
-        inStock: typeof p.stock === 'number' ? p.stock > 0 : false,
-        price: typeof p.price === 'number' ? p.price : Number(p.price || 0),
-        discount: effectiveDiscount,
-      };
-    });
-
-    const totalPages = Math.ceil(total / limit);
-    const hasNextPage = page < totalPages;
-    const hasPrevPage = page > 1;
-
-    const categoryCounts = await Product.aggregate([{ $group: { _id: '$category', count: { $sum: 1 } } }]);
-    const tagCounts = await Product.aggregate([{ $unwind: '$tags' }, { $group: { _id: '$tags', count: { $sum: 1 } } }]);
-
-    return NextResponse.json({
-      products,
-      totalProducts: total,
-      pagination: { page, limit, total, totalPages, hasNextPage, hasPrevPage },
-      categories: (categoryCounts || []).map((c) => ({ id: c._id, count: c.count })),
-      tags: (tagCounts || []).map((t) => ({ id: t._id, count: t.count })),
-    });
+    return NextResponse.json({ products, totalProducts: products.length });
   } catch (error) {
     logError('GET', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

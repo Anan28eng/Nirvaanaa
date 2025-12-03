@@ -7,9 +7,14 @@ import { authOptions } from '@/lib/auth';
 export async function GET() {
   try {
     await dbConnect();
+    // If the collection does not exist or there are no documents, handle gracefully.
+    const exists = await Announcement.exists({});
+    if (!exists) {
+      return NextResponse.json({ banner: null, message: 'no announcements seeded' }, { status: 200 });
+    }
     const banner = await Announcement.findAnnouncementBanner();
     if (!banner || !banner.isAnnouncementActive) {
-      return NextResponse.json({ error: 'No active banner found' }, { status: 404 });
+      return NextResponse.json({ banner: null, message: 'no active banner' }, { status: 200 });
     }
     return NextResponse.json({ banner }, { status: 200 });
   } catch (err) {

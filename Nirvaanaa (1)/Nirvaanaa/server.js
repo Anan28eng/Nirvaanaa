@@ -19,11 +19,13 @@ possibleEnvFiles.forEach((envPath) => {
   }
 });
 
-if (!process.env.MONGODB_URI) {
+// Prefer MONGO_URI (Atlas) or DB_URI for deployment; fall back to MONGODB_URI
+if (!process.env.MONGO_URI && !process.env.DB_URI && !process.env.MONGODB_URI) {
   process.env.MONGODB_URI = 'mongodb://127.0.0.1:27017/nirvaanaa';
-  console.warn('[server] MONGODB_URI not set; defaulting to local MongoDB at mongodb://127.0.0.1:27017/nirvaanaa');
+  console.warn('[server] No Mongo connection env found; defaulting to local MongoDB at mongodb://127.0.0.1:27017/nirvaanaa');
 } else {
-  console.log('[server] Using Mongo connection:', process.env.MONGODB_URI);
+  const used = process.env.MONGO_URI || process.env.DB_URI || process.env.MONGODB_URI;
+  console.log('[server] Using Mongo connection from env:', used ? used.replace(/:[^@]+@/, ':<redacted>@') : used);
 }
 
 const dev = process.env.NODE_ENV !== 'production';

@@ -38,8 +38,9 @@ export const useSocket = () => {
       socketRef.current = null;
     }
 
-    // Prevent initializing sockets in production if disabled
-    if (process.env.DISABLE_SOCKET === 'true' || process.env.NODE_ENV === 'production') {
+    // Prevent initializing sockets in production if disabled via public or server env var
+    const socketDisabled = process.env.NEXT_PUBLIC_DISABLE_SOCKET === 'true' || process.env.DISABLE_SOCKET === 'true' || process.env.NODE_ENV === 'production';
+    if (socketDisabled) {
       console.warn('[useSocket] socket disabled in this environment');
       return () => {};
     }

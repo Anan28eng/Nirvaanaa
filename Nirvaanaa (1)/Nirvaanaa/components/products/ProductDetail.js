@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import Image from 'next/image';
+import SafeImage from '@/components/ui/SafeImage';
 import Link from 'next/link';
 import { useEnhancedCart } from '@/components/providers/EnhancedCartProvider';
 import { useEnhancedWishlist } from '@/components/providers/EnhancedWishlistProvider';
@@ -389,16 +389,20 @@ const ProductDetail = ({ product }) => {
           {/* Main Image */}
           <div className="relative aspect-square rounded-2xl overflow-hidden bg-white shadow-lg group">
             {images[selectedImage] ? (
-              <Image
+              <SafeImage
                 src={images[selectedImage]}
                 alt={`${liveProduct.title} - Handcrafted ${liveProduct.category?.replace(/-/g, ' ')} with traditional Indian embroidery in ${selectedColor?.name || 'default'} color`}
                 fill
                 className="object-cover"
+                unoptimized={images[selectedImage]?.startsWith('http')}
               />
             ) : (
-              <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                <span className="text-gray-400 text-lg">No Image Available</span>
-              </div>
+              <SafeImage
+                src={null}
+                alt="No Image Available"
+                fill
+                className="object-cover"
+              />
             )}
             
             {/* Image Navigation Arrows */}
@@ -618,11 +622,12 @@ const ProductDetail = ({ product }) => {
                       : 'border-gray-200 hover:border-brand-gold'
                   }`}
                 >
-                  <Image
-                    src={image || '/placeholder-product.jpg'}
+                  <SafeImage
+                    src={image || null}
                     alt={`${liveProduct.title} ${selectedColor?.name ? `in ${selectedColor.name} color` : ''} - Handcrafted embroidery product detail view ${index + 1}`}
                     fill
                     className="object-cover"
+                    unoptimized={image?.startsWith('http')}
                   />
                 </button>
               ))}
@@ -886,16 +891,15 @@ const ProductDetail = ({ product }) => {
                 <Link href={`/products/${sameColorProduct.slug}`} className="block">
                   <div className="relative aspect-[3/4] overflow-hidden">
                     {sameColorProduct.mainImage ? (
-                      <Image
+                      <SafeImage
                         src={sameColorProduct.mainImage}
                         alt={sameColorProduct.title}
                         fill
                         className="object-cover transition-transform duration-300 group-hover:scale-105"
+                        unoptimized={sameColorProduct.mainImage?.startsWith('http')}
                       />
                     ) : (
-                      <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                        <span className="text-gray-400 text-sm">No Image</span>
-                      </div>
+                      <SafeImage src={null} alt="No Image" fill className="object-cover" />
                     )}
                     
                     {sameColorProduct.discount > 0 && (
@@ -962,16 +966,15 @@ const ProductDetail = ({ product }) => {
                 <Link href={`/products/${relatedProduct.slug}`} className="block">
                   <div className="relative aspect-[3/4] overflow-hidden">
                     {relatedProduct.mainImage ? (
-                      <Image
+                      <SafeImage
                         src={relatedProduct.mainImage}
                         alt={`${relatedProduct.title} - Related handcrafted ${relatedProduct.category?.replace(/-/g, ' ')} with traditional embroidery`}
                         fill
                         className="object-cover transition-transform duration-300 group-hover:scale-105"
+                        unoptimized={relatedProduct.mainImage?.startsWith('http')}
                       />
                     ) : (
-                      <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                        <span className="text-gray-400 text-sm">No Image</span>
-                      </div>
+                      <SafeImage src={null} alt="No Image" fill className="object-cover" />
                     )}
                     
                     {relatedProduct.discount > 0 && (

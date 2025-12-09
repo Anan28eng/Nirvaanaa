@@ -173,15 +173,26 @@ export default function Navbar() {
                 </button>
 
                 {session ? (
-                  <button
-                    onClick={() => {
-                      signOut();
-                      setIsMobileMenuOpen(false);
-                    }}
-                    className="text-nirvaanaa-secondary transition-colors duration-300"
-                  >
-                    Sign Out
-                  </button>
+                  <>
+                    <Link
+                      href={session.user?.role === 'admin' ? '/admin/dashboard' : '/dashboard'}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="flex items-center gap-2 px-3 py-2 text-nirvaanaa-secondary transition-colors duration-300"
+                    >
+                      <FiUser size={18} />
+                      <span>My Account</span>
+                    </Link>
+
+                    <button
+                      onClick={() => {
+                        signOut();
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className="text-nirvaanaa-secondary transition-colors duration-300"
+                    >
+                      Sign Out
+                    </button>
+                  </>
                 ) : (
                   <>
                     <Link href="/auth/signup" className="btn-outline w-full text-center">Sign Up</Link>

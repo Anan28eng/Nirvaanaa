@@ -192,7 +192,7 @@ const ContactPage = () => {
                     value={formData.phone}
                     onChange={handleInputChange}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-gold focus:border-transparent"
-                    placeholder="7763853089"
+                    placeholder="1234567890"
                   />
                 </div>
                 

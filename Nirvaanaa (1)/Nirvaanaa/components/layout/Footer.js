@@ -78,16 +78,7 @@ export default function Footer() {
           <div>
             <h4 className="text-lg font-semibold mb-4 text-nirvaanaa-primary">Customer Service</h4>
             <ul className="space-y-2">
-              <li>
-                <Link href="/shipping" className="text-nirvaanaa-primary/80 hover:text-nirvaanaa-primary transition-colors duration-300">
-                  Shipping Info
-                </Link>
-              </li>
-              <li>
-                <Link href="/returns" className="text-nirvaanaa-primary/80 hover:text-nirvaanaa-primary transition-colors duration-300">
-                  Returns & Exchanges
-                </Link>
-              </li>
+            
               <li>
                 <Link href="/care-instructions" className="text-nirvaanaa-primary/80 hover:text-nirvaanaa-primary transition-colors duration-300">
                   Care Instructions

@@ -65,10 +65,14 @@ export default function SignInPage() {
 
               Sign in with Google
             </button>
-            <button onClick={() => signIn('facebook', { callbackUrl: '/' })} className="flex items-center gap-2 bg-[#bfae9e] text-white py-2 px-4 rounded-lg font-semibold hover:bg-[#7c6a58] transition">
+            <button onClick={() => setShowCredentials(true)} className="flex items-center gap-2 bg-[#bfae9e] text-white py-2 px-4 rounded-lg font-semibold hover:bg-[#7c6a58] transition">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 48 48">
-  <path fill="#ffffff" d="M24 4C12.95 4 4 12.95 4 24c0 9.95 7.25 18.2 16.75 19.75V30.9h-5.05v-6.9h5.05v-5.25c0-5 3-7.75 7.5-7.75 2.15 0 4.4.4 4.4.4v4.85h-2.5c-2.45 0-3.2 1.5-3.2 3v3.75h5.45l-.9 6.9h-4.55v12.85C36.75 42.2 44 33.95 44 24c0-11.05-8.95-20-20-20z"/>
+  <rect x="12" y="20" width="24" height="20" rx="2" fill="#ffffff"/>
+  <path fill="#ffffff" d="M24 28a2 2 0 1 0 0 4v4h4v-4a2 2 0 1 0-4-4z"/>
+  <path fill="#ffffff" d="M16 20v-4a8 8 0 0 1 16 0v4h-4v-4a4 4 0 0 0-8 0v4z"/>
 </svg>
+
+
 
               
 

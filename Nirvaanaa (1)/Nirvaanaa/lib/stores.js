@@ -15,36 +15,44 @@ export const useCartStore = create(
       addItem: (product, quantity = 1) => {
         const { items } = get();
         const productId = product.id || product._id;
-        const existingItem = items.find(item => item.id === productId);
-        
+
+        // Build a unique item id so same product with different variants are separate
+        const variantKey = product.colorVariant
+          ? encodeURIComponent((product.colorVariant.id || product.colorVariant.name || product.colorVariant.hex || JSON.stringify(product.colorVariant)).toString())
+          : '';
+        const itemId = variantKey ? `${productId}::${variantKey}` : String(productId);
+
+        // Find existing item by the unique item id
+        const existingItem = items.find(item => item.id === itemId);
+
         // Check if product is in stock
         if (product.stock !== undefined && product.stock < quantity) {
           throw new Error(`Only ${product.stock} items available in stock`);
         }
-        
+
         if (existingItem) {
           // Check if adding more would exceed stock
           const newQuantity = existingItem.quantity + quantity;
           if (product.stock !== undefined && product.stock < newQuantity) {
             throw new Error(`Cannot add ${quantity} more items. Only ${product.stock - existingItem.quantity} available`);
           }
-          
-          // Update color variant if provided and different
+
           const updatedItem = { ...existingItem, quantity: newQuantity };
+          // Keep variant and image updated
           if (product.colorVariant) {
             updatedItem.colorVariant = product.colorVariant;
             updatedItem.image = product.image || product.mainImage || existingItem.image;
           }
-          
+
           set({
             items: items.map(item =>
-              item.id === productId ? updatedItem : item
+              item.id === itemId ? updatedItem : item
             )
           });
         } else {
           set({
             items: [...items, {
-              id: productId,
+              id: itemId,
               productId: productId,
               name: product.name || product.title,
               price: product.price,

@@ -1,8 +1,9 @@
 module.exports = {
   images: {
-    // In some hosting environments the Next.js Image Optimization API is not available.
-    // Allow turning off optimization and prefer modern formats.
-    unoptimized: true,
+    // Image optimization is enabled by default. If your host does not support
+    // the Next.js Image Optimization API set the env var
+    // `NEXT_DISABLE_IMAGE_OPTIMIZATION=true` to disable it.
+    unoptimized: process.env.NEXT_DISABLE_IMAGE_OPTIMIZATION === 'true',
     formats: ['image/avif', 'image/webp'],
     remotePatterns: [
       {
@@ -37,6 +38,13 @@ module.exports = {
       {
         // Cache static assets aggressively; CDN or reverse proxy may override.
         source: '/_next/static/(.*)',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+        ],
+      },
+      {
+        // Cache images served from the public /images path
+        source: '/images/(.*)',
         headers: [
           { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
         ],

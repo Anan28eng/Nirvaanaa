@@ -51,15 +51,7 @@ export default function SignUpPage() {
   Sign up with Google
 </button>
 
-<button
-  onClick={() => signIn('facebook', { callbackUrl: '/' })}
-  className="w-full h-10 rounded btn mt-2 bg-brand-gold text-white flex items-center hover:bg-brand-brown justify-center gap-2"
->
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="20" height="20">
-    <path fill="#fff" d="M24 4C12.95 4 4 12.95 4 24c0 9.95 7.25 18.2 16.75 19.75V30.5h-5v-6.5h5v-5c0-5 3-7.75 7.5-7.75 2.15 0 4.4.4 4.4.4v4.85h-2.5c-2.45 0-3.2 1.5-3.2 3v3.5h5.5l-.9 6.5h-4.6v13.25C36.75 42.2 44 33.95 44 24c0-11.05-8.95-20-20-20z"/>
-  </svg>
-  Sign up with Facebook
-</button>
+
         </div>
       </div>
     </main>

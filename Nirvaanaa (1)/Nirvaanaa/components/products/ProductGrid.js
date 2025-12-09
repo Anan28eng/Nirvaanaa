@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
+import SafeImage from '@/components/ui/SafeImage';
 import { useEnhancedCart } from '@/components/providers/EnhancedCartProvider';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
@@ -90,18 +91,20 @@ const ProductCard = ({ product }) => {
         {/* Product Image */}
         <div className="relative aspect-[4/3] overflow-hidden">
           {liveProduct.mainImage ? (
-            <Image
+            <SafeImage
               src={liveProduct.mainImage}
               alt={`${liveProduct.title} - Handcrafted ${liveProduct.category?.replace(/-/g, ' ')} with traditional Indian embroidery patterns`}
               fill
               className="object-cover transition-transform duration-300 group-hover:scale-105"
               unoptimized={liveProduct.mainImage?.startsWith('http')}
-              priority={false}
             />
           ) : (
-            <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-              <span className="text-gray-400 text-sm">No Image</span>
-            </div>
+            <SafeImage
+              src={null}
+              alt="No image available"
+              fill
+              className="object-cover"
+            />
           )}
           
           {/* Quick Actions Overlay */}

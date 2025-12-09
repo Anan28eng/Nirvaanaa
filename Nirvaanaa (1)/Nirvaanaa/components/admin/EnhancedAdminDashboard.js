@@ -1568,6 +1568,139 @@ export default function EnhancedAdminDashboard() {
                   />
                 </div>
 
+                {/* Color Variants (Edit) */}
+                <div className="border-b border-gray-200 pb-6">
+                  <h4 className="text-md font-medium text-gray-700 mb-4">Color Variants</h4>
+                  <p className="text-xs text-gray-500 mb-4">
+                    Edit existing color variants. Change name, hex code and associated images for each variant.
+                  </p>
+
+                  {(editProductData.colorVariants || []).map((variant, variantIndex) => (
+                    <div key={variantIndex} className="mb-6 p-4 border border-gray-200 rounded-lg bg-gray-50">
+                      <div className="flex items-center justify-between mb-3">
+                        <h5 className="text-sm font-medium text-gray-700">Color Variant {variantIndex + 1}</h5>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const updated = (editProductData.colorVariants || []).filter((_, i) => i !== variantIndex);
+                            setEditProductData({ ...editProductData, colorVariants: updated });
+                          }}
+                          className="text-red-500 hover:text-red-700 text-sm"
+                        >
+                          Remove
+                        </button>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Color Name *</label>
+                          <input
+                            type="text"
+                            placeholder="e.g., Red, Blue, Black"
+                            value={variant.name || ''}
+                            onChange={(e) => {
+                              const updated = [...(editProductData.colorVariants || [])];
+                              updated[variantIndex] = { ...variant, name: e.target.value };
+                              setEditProductData({ ...editProductData, colorVariants: updated });
+                            }}
+                            className="input"
+                            required
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Color Hex Code *</label>
+                          <div className="flex gap-2">
+                            <input
+                              type="color"
+                              value={variant.hex || '#000000'}
+                              onChange={(e) => {
+                                const updated = [...(editProductData.colorVariants || [])];
+                                updated[variantIndex] = { ...variant, hex: e.target.value };
+                                setEditProductData({ ...editProductData, colorVariants: updated });
+                              }}
+                              className="w-16 h-10 border border-gray-300 rounded cursor-pointer"
+                            />
+                            <input
+                              type="text"
+                              placeholder="#000000"
+                              value={variant.hex || ''}
+                              onChange={(e) => {
+                                const updated = [...(editProductData.colorVariants || [])];
+                                updated[variantIndex] = { ...variant, hex: e.target.value };
+                                setEditProductData({ ...editProductData, colorVariants: updated });
+                              }}
+                              className="input flex-1"
+                              pattern="^#[0-9A-Fa-f]{6}$"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="mt-4">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Images for this Color ({(variant.images || []).length} images)</label>
+                        <div className="space-y-2">
+                          {(variant.images || []).map((img, imgIndex) => (
+                            <div key={imgIndex} className="flex gap-2 items-center">
+                              <ImageUpload
+                                value={typeof img === 'string' ? img : img?.url || ''}
+                                onChange={(url) => {
+                                  const updated = [...(editProductData.colorVariants || [])];
+                                  const variantImages = [...(variant.images || [])];
+                                  variantImages[imgIndex] = url;
+                                  updated[variantIndex] = { ...variant, images: variantImages };
+                                  setEditProductData({ ...editProductData, colorVariants: updated });
+                                }}
+                                placeholder={`Image ${imgIndex + 1} for ${variant.name || 'color'}`}
+                                className="flex-1"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const updated = [...(editProductData.colorVariants || [])];
+                                  const variantImages = (variant.images || []).filter((_, i) => i !== imgIndex);
+                                  updated[variantIndex] = { ...variant, images: variantImages };
+                                  setEditProductData({ ...editProductData, colorVariants: updated });
+                                }}
+                                className="px-3 py-2 text-red-500 hover:text-red-700 text-sm border border-red-300 rounded hover:bg-red-50"
+                              >
+                                Remove
+                              </button>
+                            </div>
+                          ))}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const updated = [...(editProductData.colorVariants || [])];
+                              const variantImages = [...(variant.images || []), ''];
+                              updated[variantIndex] = { ...variant, images: variantImages };
+                              setEditProductData({ ...editProductData, colorVariants: updated });
+                            }}
+                            className="w-full px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-brand-gold hover:text-brand-gold transition-colors"
+                          >
+                            + Add Image
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+
+                  <div className="mb-4">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEditProductData({
+                          ...editProductData,
+                          colorVariants: [...(editProductData.colorVariants || []), { name: '', hex: '#000000', images: [] }]
+                        });
+                      }}
+                      className="w-full px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-brand-gold hover:text-brand-gold transition-colors"
+                    >
+                      + Add Color Variant
+                    </button>
+                  </div>
+                </div>
+
                 {/* Publishing Options */}
                 <div className="flex gap-4 items-center">
                   <label className="flex items-center gap-2">

@@ -169,8 +169,8 @@ export default function EnhancedCartPage() {
 
               <AnimatePresence>
                 {items.map((item, index) => (
-                  <motion.div
-                    key={item.productId}
+                    <motion.div
+                      key={item.id}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: 20 }}
@@ -213,7 +213,7 @@ export default function EnhancedCartPage() {
                       {/* Quantity Controls */}
                       <div className="flex items-center space-x-2">
                         <button
-                          onClick={() => handleUpdateQuantity(item.productId, item.quantity - 1)}
+                          onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
                           disabled={updatingItems.has(item.productId) || item.quantity <= 1}
                           className="p-1 rounded-full bg-gray-100 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
@@ -221,7 +221,7 @@ export default function EnhancedCartPage() {
                         </button>
                         
                         <span className="w-12 text-center font-semibold">
-                          {updatingItems.has(item.productId) ? (
+                          {updatingItems.has(item.id) ? (
                             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-[#7c6a58] mx-auto"></div>
                           ) : (
                             item.quantity
@@ -229,8 +229,8 @@ export default function EnhancedCartPage() {
                         </span>
                         
                         <button
-                          onClick={() => handleUpdateQuantity(item.productId, item.quantity + 1)}
-                          disabled={updatingItems.has(item.productId)}
+                          onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
+                          disabled={updatingItems.has(item.id)}
                           className="p-1 rounded-full bg-gray-100 hover:bg-gray-200 disabled:opacity-50"
                         >
                           <FaPlus className="w-4 h-4" />
@@ -246,12 +246,12 @@ export default function EnhancedCartPage() {
 
                       {/* Remove Button */}
                       <button
-                        onClick={() => handleRemoveItem(item.productId)}
-                        disabled={removingItems.has(item.productId)}
+                        onClick={() => handleRemoveItem(item.id)}
+                        disabled={removingItems.has(item.id)}
                         className="text-red-500 hover:text-red-700 p-2 disabled:opacity-50"
                         title="Remove item"
                       >
-                        {removingItems.has(item.productId) ? (
+                        {removingItems.has(item.id) ? (
                           <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-500"></div>
                         ) : (
                           <FaTrash className="w-4 h-4" />

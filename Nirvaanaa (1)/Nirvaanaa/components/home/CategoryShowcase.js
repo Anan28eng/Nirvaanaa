@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
+import SafeImage from '@/components/ui/SafeImage';
 
 const defaultCategories = [
   {
@@ -56,15 +57,12 @@ const CategoryCard = ({ category, index }) => {
         {/* Image */}
         <div className="relative h-64 overflow-hidden bg-gray-200">
           {category.image && category.image !== '/images/categories/handbags.jpg' && category.image !== '/images/categories/sarees.jpg' && category.image !== '/images/categories/home-decor.jpg' && category.image !== '/images/categories/clothing.jpg' ? (
-            <Image
+            <SafeImage
               src={category.image}
               alt={`${category.name} collection - Handcrafted ${category.name.toLowerCase()} with traditional Indian embroidery patterns`}
               fill
               className="object-cover transition-transform duration-500 group-hover:scale-110"
-              onError={(e) => {
-                // Fallback to gradient if image fails
-                e.target.style.display = 'none';
-              }}
+              unoptimized={category.image?.startsWith('http')}
             />
           ) : (
             <div className={`w-full h-full bg-gradient-to-br ${category.color} opacity-80`} />
@@ -246,11 +244,12 @@ const CategoryShowcase = () => {
               
               <div className="relative">
                 <div className="relative h-64 lg:h-80 rounded-2xl overflow-hidden">
-                  <Image
+                  <SafeImage
                     src="https://res.cloudinary.com/dvy1jxowv/image/upload/v1762680536/home3_2_yzcnuu.jpg"
                     alt="New Collection"
                     fill
                     className="object-cover"
+                    unoptimized={true}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
                 </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
+import SafeImage from '@/components/ui/SafeImage';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEnhancedCart } from '@/components/providers/EnhancedCartProvider';
@@ -181,12 +181,13 @@ export default function EnhancedCartPage() {
                   >
                     <div className="flex items-center space-x-4">
                       {/* Product Image */}
-                      <div className="relative w-20 h-20 flex-shrink-0">
-                        <Image
-                          src={item.image || '/placeholder-product.jpg'}
+                        <div className="relative w-20 h-20 flex-shrink-0">
+                        <SafeImage
+                          src={item.image || null}
                           alt={`${item.name} ${item.colorVariant ? `in ${item.colorVariant.name} color` : ''} - Handcrafted embroidery product in shopping cart`}
                           fill
                           className="object-cover rounded-lg"
+                          unoptimized={item.image?.startsWith('http')}
                         />
                       </div>
 

@@ -5,6 +5,7 @@ import { FiX, FiShoppingBag, FiTrash2 } from 'react-icons/fi';
 import { useEnhancedCart } from '@/components/providers/EnhancedCartProvider';
 import Link from 'next/link';
 import Image from 'next/image';
+import SafeImage from '@/components/ui/SafeImage';
 import DummyCheckoutButton from './dummypay';
 
 export default function CartDrawer({ isOpen, onClose }) {
@@ -86,12 +87,13 @@ export default function CartDrawer({ isOpen, onClose }) {
                     <div key={item.id} className="flex space-x-4 p-4 bg-gray-50 rounded-lg">
                       {/* Product Image */}
                       <div className="flex-shrink-0">
-                        <Image
-                          src={item.image || '/images/placeholder-product.jpg'}
+                        <SafeImage
+                          src={item.image || null}
                           alt={item.name}
                           width={60}
                           height={60}
                           className="rounded-md object-cover"
+                          unoptimized={item.image?.startsWith('http')}
                         />
                       </div>
 
@@ -146,7 +148,7 @@ export default function CartDrawer({ isOpen, onClose }) {
                 <div className="space-y-3">
                   <Link
                     href="/cart"
-                    className="block w-full text-center py-3 px-4 border-2 border-brand-gold text-brand-gold rounded-lg font-medium hover:bg-brand-gold hover:text-white transition-colors"
+                    className="block w-full text-center py-3 px-4 border-2 border-brand-gold text-brand-gold rounded-lg font-medium hover:bg-brand-gold hover:text-black transition-colors"
                     onClick={onClose}
                   >
                     View Cart

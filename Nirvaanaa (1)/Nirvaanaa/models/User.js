@@ -106,6 +106,13 @@ const userSchema = new mongoose.Schema({
       price: Number,
       quantity: { type: Number, default: 1 },
       slug: String,
+      discount: { type: Number, default: 0 },
+      // Persist selected color variant per item so variants remain after reloads
+      colorVariant: {
+        name: String,
+        hex: String,
+        images: [String]
+      }
     }
   ],
   wishlist: [

@@ -14,11 +14,23 @@ export default function SafeImage({ src, alt = '', className = '', sizes = DEFAU
   const normalizedSrc = src || '';
 
   // Decide whether to use cloudinary loader: use it only for relative src paths
+  // and only if Cloudinary cloud name is configured via NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
   const useCloudinary = useMemo(() => {
     if (!normalizedSrc) return false;
     if (normalizedSrc.startsWith('http') || normalizedSrc.startsWith('data:')) return false;
+    if (!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME) return false;
     return true;
   }, [normalizedSrc]);
+
+  // Determine whether to let Next.js optimize images or serve them directly.
+  // If caller explicitly passes `unoptimized` use that. Otherwise, for local
+  // public images (starting with '/images/') prefer to serve them directly
+  // to avoid hitting the Next.js Image Optimization API on hosts that don't
+  // support it (which returns 400). Also respect build-time env var.
+  const disableImageOptimizer = process.env.NEXT_DISABLE_IMAGE_OPTIMIZATION === 'true';
+  const shouldUnoptimized = props.unoptimized !== undefined
+    ? props.unoptimized
+    : (disableImageOptimizer || (normalizedSrc && normalizedSrc.startsWith('/images/')));
 
   const onLoad = () => setLoading(false);
   const onError = () => {
@@ -42,6 +54,8 @@ export default function SafeImage({ src, alt = '', className = '', sizes = DEFAU
         onLoadingComplete={onLoad}
         onError={onError}
         loader={useCloudinary ? cloudinaryLoader : undefined}
+        unoptimized={shouldUnoptimized}
+        priority={priority}
         {...props}
       />
     </div>

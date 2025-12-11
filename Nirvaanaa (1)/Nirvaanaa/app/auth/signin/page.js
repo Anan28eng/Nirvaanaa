@@ -82,7 +82,6 @@ export default function SignInPage() {
         )}
         {showCredentials && (
           <form onSubmit={handleCredentialsSignIn} className="flex bg-none flex-col gap-4">
-
             <input
               type="email"
               placeholder="Email"

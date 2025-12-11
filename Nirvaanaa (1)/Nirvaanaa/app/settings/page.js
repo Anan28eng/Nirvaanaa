@@ -4,7 +4,7 @@ import { useSession } from 'next-auth/react';
 import { Playfair_Display, Inter } from 'next/font/google';
 import { motion } from 'framer-motion';
 import { FiUser, FiMail, FiPhone, FiMapPin, FiCamera, FiSave, FiEdit3 } from 'react-icons/fi';
-import Image from 'next/image';
+import SafeImage from '@/components/ui/SafeImage';
 import toast from 'react-hot-toast';
 
 const playfair = Playfair_Display({ subsets: ['latin'], weight: '700' });
@@ -186,13 +186,14 @@ export default function SettingsPage() {
               <div className="flex flex-col items-center">
                 <div className="relative w-32 h-32 rounded-full overflow-hidden bg-gray-100 mb-4">
                   {profile.profileImage ? (
-                    <Image
-                      src={profile.profileImage}
-                      alt="Profile"
-                      fill
-                      className="object-cover"
-                    />
-                  ) : (
+                      <SafeImage
+                        src={profile.profileImage}
+                        alt="Profile"
+                        fill
+                        className="object-cover"
+                        unoptimized={profile.profileImage?.startsWith('http') || profile.profileImage?.startsWith('blob:')}
+                      />
+                    ) : (
                     <div className="w-full h-full flex items-center justify-center text-gray-400">
                       <FiUser className="w-16 h-16" />
                     </div>

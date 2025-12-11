@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import Image from 'next/image';
+import SafeImage from '@/components/ui/SafeImage';
 
 const HeroSection = () => {
   return (
@@ -152,12 +152,13 @@ const HeroSection = () => {
             className="relative"
           >
             <div className="relative mt-20 w-full h-[500px] sm:h-[600px] lg:h-[700px]">
-              <Image
+              <SafeImage
                 src="https://res.cloudinary.com/dvy1jxowv/image/upload/v1762680536/home1_1_zu81fv.jpg"
                 alt="Handcrafted embroidered handbag with traditional Indian patterns in gold and brown colors"
                 fill
                 className="object-cover  rounded-2xl shadow-2xl"
                 priority
+                unoptimized={true}
               />
               
               {/* Floating Badge */}

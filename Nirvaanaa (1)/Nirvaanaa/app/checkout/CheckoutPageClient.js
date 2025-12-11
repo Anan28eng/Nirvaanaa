@@ -5,7 +5,7 @@ import { useEnhancedCart } from '@/components/providers/EnhancedCartProvider';
 import { useSession } from 'next-auth/react';
 import { motion } from 'framer-motion';
 import { FiPackage, FiTruck, FiCreditCard, FiLock, FiUser, FiAlertCircle } from 'react-icons/fi';
-import Image from 'next/image';
+import SafeImage from '@/components/ui/SafeImage';
 import PaymentForm from '@/components/checkout/PaymentForm';
 
 export default function CheckoutPageClient() {
@@ -482,11 +482,12 @@ export default function CheckoutPageClient() {
                   <div key={item.id} className="flex items-center gap-3">
                     <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-gray-100">
                       {item.image ? (
-                        <Image
+                        <SafeImage
                           src={item.image}
                           alt={`${item.name} - Handcrafted embroidery product in cart`}
                           fill
                           className="object-cover"
+                          unoptimized={(item.image || '').startsWith('http')}
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-gray-400">

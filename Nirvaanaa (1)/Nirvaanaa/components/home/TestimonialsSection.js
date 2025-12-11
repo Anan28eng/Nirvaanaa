@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Image from 'next/image';
+import SafeImage from '@/components/ui/SafeImage';
 
 const STREAM_ENDPOINT = '/api/testimonials/stream';
 const FETCH_ENDPOINT = '/api/testimonials/featured';
@@ -60,7 +60,7 @@ const TestimonialCard = ({ testimonial, isActive }) => (
     <div className="flex items-center gap-4 justify-center">
       <div className="relative w-14 h-14 rounded-full overflow-hidden bg-nirvaanaa-primary-light border border-nirvaanaa-primary text-nirvaanaa-secondary font-semibold uppercase flex items-center justify-center">
         {testimonial.image ? (
-          <Image src={testimonial.image} alt={testimonial.name} fill className="object-cover" sizes="56px" />
+          <SafeImage src={testimonial.image} alt={testimonial.name} fill className="object-cover" sizes="56px" unoptimized={testimonial.image?.startsWith('http')} />
         ) : (
           testimonial.name
             .split(' ')

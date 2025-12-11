@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import Image from 'next/image';
+import SafeImage from '@/components/ui/SafeImage';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useEnhancedCart } from '@/components/providers/EnhancedCartProvider';
@@ -143,11 +143,12 @@ export default function EnhancedProductCard({ product }) {
     >
       {/* Product Image */}
       <div className="relative h-64 overflow-hidden rounded-t-xl">
-        <Image
+        <SafeImage
           src={liveProduct.images?.[0]?.url || liveProduct.mainImage || '/placeholder-product.jpg'}
           alt={liveProduct.title}
           fill
           className="object-cover group-hover:scale-110 transition-transform duration-300"
+          unoptimized={(liveProduct.images?.[0]?.url || liveProduct.mainImage || '').startsWith('http')}
         />
         
         {/* Quick Actions Overlay */}

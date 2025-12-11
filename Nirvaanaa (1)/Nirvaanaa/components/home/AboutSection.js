@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import Image from 'next/image';
+import SafeImage from '@/components/ui/SafeImage';
 
 const AboutSection = () => {
   const stats = [
@@ -109,11 +109,12 @@ const AboutSection = () => {
           >
             {/* Main Image */}
             <div className="relative rounded-2xl overflow-hidden shadow-2xl aspect-[3/4] max-w-sm mx-auto">
-              <Image
+              <SafeImage
                 src="https://res.cloudinary.com/dvy1jxowv/image/upload/v1762597791/Copy_of_N-BB3_aucavt.jpg"
                 alt="Skilled artisan hand-embroidering traditional Indian patterns on fabric with colorful threads"
                 fill
                 className="object-cover"
+                unoptimized={true}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
             </div>
@@ -125,11 +126,12 @@ const AboutSection = () => {
               transition={{ duration: 0.8, delay: 0.4 }}
               className="absolute -top-6 -left-6 w-32 h-32 sm:w-40 sm:h-40 rounded-2xl overflow-hidden shadow-xl"
             >
-              <Image
+              <SafeImage
                 src="https://res.cloudinary.com/dvy1jxowv/image/upload/v1762597809/N-PIC1_y47mss.jpg"
                 alt="Close-up detail of intricate hand embroidery work showing traditional Indian patterns and colorful threads"
                 fill
                 className="object-cover"
+                unoptimized={true}
               />
               <div className="absolute inset-0 bg-black bg-opacity-10" />
             </motion.div>
@@ -141,11 +143,12 @@ const AboutSection = () => {
               transition={{ duration: 0.8, delay: 0.6 }}
               className="absolute -bottom-6 -right-6 w-28 h-28 sm:w-36 sm:h-36 rounded-2xl overflow-hidden shadow-xl"
             >
-              <Image
+              <SafeImage
                 src="https://res.cloudinary.com/dvy1jxowv/image/upload/v1762597800/GIFT_HAMPER_2_PIECE_SET_kcqgdj.jpg"
                 alt="Traditional embroidery materials including colorful threads, needles, and fabric for handcrafted products"
                 fill
                 className="object-cover"
+                unoptimized={true}
               />
               <div className="absolute inset-0 bg-black bg-opacity-10" />
             </motion.div>

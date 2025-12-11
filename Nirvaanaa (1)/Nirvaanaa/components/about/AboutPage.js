@@ -1,6 +1,6 @@
 ﻿'use client';
 
-import Image from 'next/image';
+import SafeImage from '@/components/ui/SafeImage';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 
@@ -36,8 +36,8 @@ const iconMap = {
 
 const FounderPortrait = ({ name }) => {
   return (
-    <div className="relative h-96 w-full overflow-hidden rounded-3xl border border-gray-200">
-      <Image
+      <div className="relative h-96 w-full overflow-hidden rounded-3xl border border-gray-200">
+      <SafeImage
         src="/founder.jpeg"
         alt={name}
         fill

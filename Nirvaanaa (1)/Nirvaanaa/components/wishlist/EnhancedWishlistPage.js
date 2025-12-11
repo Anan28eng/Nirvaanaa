@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import Image from 'next/image';
+import SafeImage from '@/components/ui/SafeImage';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEnhancedWishlist } from '@/components/providers/EnhancedWishlistProvider';
@@ -165,11 +165,12 @@ export default function EnhancedWishlistPage() {
                 >
                   {/* IMAGE */}
                   <div className="relative h-48 mb-4">
-                    <Image
+                    <SafeImage
                       src={item.image || '/placeholder-product.jpg'}
                       alt={item.name}
                       fill
                       className="object-cover rounded-xl"
+                      unoptimized={(item.image || '/placeholder-product.jpg').startsWith('http')}
                     />
 
                     {/* REMOVE BUTTON */}

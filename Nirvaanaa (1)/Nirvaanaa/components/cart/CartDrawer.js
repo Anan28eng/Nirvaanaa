@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FiX, FiShoppingBag, FiTrash2 } from 'react-icons/fi';
 import { useEnhancedCart } from '@/components/providers/EnhancedCartProvider';
 import Link from 'next/link';
-import Image from 'next/image';
 import SafeImage from '@/components/ui/SafeImage';
 import DummyCheckoutButton from './dummypay';
 

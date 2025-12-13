@@ -28,8 +28,10 @@ function parsePositiveInt(value, fallback) {
 export async function GET(request) {
   try {
     await dbConnect();
-
-    const { searchParams } = new URL(request.url);
+    const url = new URL(request.url);
+    const { searchParams } = url;
+    // support fetching a single product via path: /api/products/:identifier
+    
     const categoryParam = (searchParams.get('category') || '').trim().toLowerCase();
     const excludeId = searchParams.get('exclude');
     const limit = parsePositiveInt(searchParams.get('limit'), 2000);
@@ -69,6 +71,9 @@ export async function GET(request) {
       query._id = { $ne: excludeId };
     }
 
+    // If caller requested a single product by identifier (id or slug), fetch and return it
+
+
     const rawProducts = await Product.find(query)
       .sort({ createdAt: -1 })
       .limit(limit)
@@ -101,6 +106,8 @@ export async function GET(request) {
             : [],
         }))
       : [],
+    // normalize product variants (size/options/etc.)
+    variants: Array.isArray(p.variants) ? p.variants : [],
 
     inStock: typeof p.stock === 'number' ? p.stock > 0 : false,
     price:

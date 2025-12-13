@@ -34,57 +34,52 @@ const storeProduct =
   products.find(p => p._id === product._id || p.id === product.id) || null;
 
 const liveProduct = {
-  ...product, // server product is source of truth
-  ...(storeProduct
-    ? {
-        stock: storeProduct.stock,
-        salesCount: storeProduct.salesCount,
-        inStock: storeProduct.inStock,
-      }
-    : {}),
+  ...product,
+  stock: storeProduct?.stock ?? product.stock ?? 0,
+  salesCount: storeProduct?.salesCount ?? product.salesCount ?? 0,
+  inStock: storeProduct?.inStock ?? (product.stock > 0),
+  ratings: product.ratings ?? { average: 0, count: 0 },
+  tags: product.tags ?? [],
 };
+
 
   
   // Get color variants from product and ensure unique hex codes
   // Use useMemo to prevent unnecessary recalculations and improve loading
  const colorVariants = useMemo(() => {
-  const source =
-    product.colorVariants?.length
-      ? product.colorVariants
-      : product.colors || [];
-
+  const source = Array.isArray(product.colorVariants)
+    ? product.colorVariants
+    : Array.isArray(product.colors)
+    ? product.colors
+    : [];
   if (!Array.isArray(source) || source.length === 0) return [];
 
   const hexMap = new Map();
-
   return source.map((color, index) => {
-    let hex = color.hex || color.color || '#000000';
-
-    if (!hex.startsWith('#')) hex = `#${hex}`;
-    if (!/^#[0-9A-Fa-f]{6}$/.test(hex)) {
-      hex = `#${(index * 123456).toString(16).padStart(6, '0').slice(0, 6)}`;
-    }
-
-    if (hexMap.has(hex.toLowerCase())) {
-      hex = `#${(index * 654321).toString(16).padStart(6, '0').slice(0, 6)}`;
-    }
-
+    const raw = typeof color === 'string' ? { name: color, hex: color } : (color || {});
+    let hex = raw.hex || raw.color || '#000000';
+    if (typeof hex === 'string' && !hex.startsWith('#')) hex = `#${hex}`;
+    if (!/^#[0-9A-Fa-f]{6}$/.test(hex)) hex = `#${(index * 123456).toString(16).padStart(6, '0').slice(0, 6)}`;
+    if (hexMap.has(hex.toLowerCase())) hex = `#${(index * 654321).toString(16).padStart(6, '0').slice(0, 6)}`;
     hexMap.set(hex.toLowerCase(), true);
 
-    return {
-      ...color,
-      name: color.name || `Color ${index + 1}`,
-      hex,
-      images: color.images || [],
-    };
+    const images = Array.isArray(raw.images)
+      ? raw.images.map(img => (typeof img === 'string' ? img : img?.url)).filter(Boolean)
+      : [];
+
+    return { ...raw, name: raw.name || `Color ${index + 1}`, hex, images };
   });
+
 }, [product.colorVariants, product.colors]);
+
+ const [selectedColor, setSelectedColor] = useState(null);
+
 
 
   // Initialize selectedColor to prevent hydration errors
   // Use useState with lazy initialization to ensure colorVariants is available
   // Initialize with first color variant if available to prevent hydration mismatch
-const [selectedColor, setSelectedColor] = useState(null);
+
 
 useEffect(() => {
   if (!colorVariants.length) return;
@@ -202,12 +197,15 @@ useEffect(() => {
         : liveProduct.mainImage;
       
       await addToCart({ 
+        productId: liveProduct.id || liveProduct._id,
         id: liveProduct.id || liveProduct._id, 
         name: liveProduct.name || liveProduct.title, 
         price: effectivePrice, 
         discount: discountPct, 
         image: selectedColorImage || liveProduct.mainImage, 
         slug: liveProduct.slug,
+        // include both `color` and `colorVariant` for compatibility
+        color: selectedColor || null,
         colorVariant: selectedColor ? {
           name: selectedColor.name,
           hex: selectedColor.hex,
@@ -290,17 +288,20 @@ useEffect(() => {
   // Get available images based on selected color or default
   const getImagesForColor = (color) => {
     if (color && color.images && Array.isArray(color.images) && color.images.length > 0) {
-      return color.images.map(img => typeof img === 'string' ? img : img?.url || '').filter(Boolean);
+      return color.images.map(img => typeof img === 'string' ? img : img?.url).filter(Boolean);
     }
     return [];
-  };
+};
+
 
   // Get current images based on selected color
   const currentColorImages = selectedColor ? getImagesForColor(selectedColor) : [];
-  const defaultImages = [
-    liveProduct.mainImage,
-    ...(Array.isArray(liveProduct.images) ? liveProduct.images.map(img => (typeof img === 'string' ? img : img?.url || '')) : []),
-  ].filter(Boolean);
+  const placeholderImage = '/placeholder-product.png';
+const defaultImages = [
+  liveProduct.mainImage || placeholderImage,
+  ...(Array.isArray(liveProduct.images) ? liveProduct.images.map(img => (typeof img === 'string' ? img : img?.url)).filter(Boolean) : []),
+].filter(Boolean);
+
 
   // Use color-specific images if available, otherwise use default images
   const images = currentColorImages.length > 0 ? currentColorImages : defaultImages;
@@ -311,6 +312,13 @@ useEffect(() => {
       setSelectedImage(0);
     }
   }, [selectedColor, images.length]);
+
+  // Guard variant arrays
+  const variants = Array.isArray(product.variants) ? product.variants : [];
+  const safeColorVariants = Array.isArray(product.colorVariants) ? product.colorVariants : [];
+
+  // Rating value for stars
+  const ratingValue = Math.floor(liveProduct.ratings?.average || 0);
 
   // If product is not yet provided, render a hydration-safe loading placeholder
   if (!liveProduct) {
@@ -330,7 +338,7 @@ useEffect(() => {
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Breadcrumb */}
       <nav className="mb-8">
-        <ol className="flex items-center space-x-2 text-sm text-brand-brown">
+        <ol className="flex items-center space-x-2 text-sm text-black">
           <li>
             <Link href="/" className="hover:text-brand-gold transition-colors">
               Home
@@ -350,7 +358,7 @@ useEffect(() => {
           </li>
           <li className="flex items-center">
             <span className="mx-2">/</span>
-            <span className="text-brand-brown">{liveProduct.title}</span>
+            <span className="text-black">{liveProduct.title}</span>
           </li>
         </ol>
       </nav>
@@ -361,13 +369,14 @@ useEffect(() => {
           {/* Main Image */}
           <div className="relative aspect-square rounded-2xl overflow-hidden bg-white shadow-lg group">
             {images[selectedImage] ? (
-              <SafeImage
-                src={images[selectedImage]}
-                alt={`${liveProduct.title} - Handcrafted ${liveProduct.category?.replace(/-/g, ' ')} with traditional Indian embroidery in ${selectedColor?.name || 'default'} color`}
-                fill
-                className="object-cover"
-                unoptimized={images[selectedImage]?.startsWith('http')}
-              />
+             <SafeImage
+    src={images[selectedImage] || placeholderImage}
+    alt={liveProduct.title}
+    fill
+    className="object-cover"
+    unoptimized={(images[selectedImage] || '').startsWith('http')}
+/>
+
             ) : (
               <SafeImage
                 src={null}
@@ -388,7 +397,7 @@ useEffect(() => {
                   className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10"
                   aria-label="Previous image"
                 >
-                  <FiChevronLeft className="w-6 h-6 text-brand-brown" />
+                  <FiChevronLeft className="w-6 h-6 text-black" />
                 </button>
                 <button
                   onClick={(e) => {
@@ -398,7 +407,7 @@ useEffect(() => {
                   className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10"
                   aria-label="Next image"
                 >
-                  <FiChevronRight className="w-6 h-6 text-brand-brown" />
+                  <FiChevronRight className="w-6 h-6 text-black" />
                 </button>
               </>
             )}
@@ -425,7 +434,7 @@ useEffect(() => {
                   aria-label="Previous color variant"
                   title="Previous color"
                 >
-                  <FiChevronLeft className="w-5 h-5 text-brand-brown" />
+                  <FiChevronLeft className="w-5 h-5 text-black" />
                 </button>
                 <button
                   onClick={(e) => {
@@ -446,11 +455,11 @@ useEffect(() => {
                   aria-label="Next color variant"
                   title="Next color"
                 >
-                  <FiChevronRight className="w-5 h-5 text-brand-brown" />
+                  <FiChevronRight className="w-5 h-5 text-black" />
                 </button>
                 {/* Color Indicator Badge */}
                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/90 rounded-full px-3 py-1 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                  <span className="text-xs font-medium text-brand-brown">
+                  <span className="text-xs font-medium text-black">
                     {selectedColor?.name || colorVariants[0]?.name || 'Color'} 
                     ({colorVariants.findIndex(c => 
                       selectedColor && (
@@ -480,7 +489,7 @@ useEffect(() => {
           {colorVariants.length > 0 ? (
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <label className="block text-sm font-medium text-brand-brown">
+                <label className="block text-sm font-medium text-black">
                   Color: {selectedColor?.name || colorVariants[0]?.name || 'Select Color'}
                 </label>
                 {colorVariants.length > 1 && (
@@ -502,7 +511,7 @@ useEffect(() => {
                       aria-label="Previous color"
                       title="Previous color"
                     >
-                      <FiChevronLeft className="w-5 h-5 text-brand-brown" />
+                      <FiChevronLeft className="w-5 h-5 text-black" />
                     </button>
                     <span className="text-xs text-gray-500">
                       {(colorVariants.findIndex(c => 
@@ -529,7 +538,7 @@ useEffect(() => {
                       aria-label="Next color"
                       title="Next color"
                     >
-                      <FiChevronRight className="w-5 h-5 text-brand-brown" />
+                      <FiChevronRight className="w-5 h-5 text-black" />
                     </button>
                   </div>
                 )}
@@ -559,7 +568,7 @@ useEffect(() => {
                         className="w-6 h-6 rounded-full border-2 border-gray-300"
                         style={{ backgroundColor: colorHex }}
                       />
-                      <span className={`text-sm font-medium ${isSelected ? 'text-brand-brown' : 'text-gray-700'}`}>
+                      <span className={`text-sm font-medium ${isSelected ? 'text-black' : 'text-gray-700'}`}>
                         {colorName}
                       </span>
                       {isSelected && (
@@ -610,10 +619,10 @@ useEffect(() => {
         {/* Product Info */}
         <div className="space-y-6">
           <div>
-            <h1 className="text-3xl lg:text-4xl font-playfair font-bold text-brand-brown mb-2">
+            <h1 className="text-3xl lg:text-4xl font-playfair font-bold text-black mb-2">
               {liveProduct.title || liveProduct.name}
             </h1>
-            <p className="text-brand-brown text-lg">
+            <p className="text-black text-lg">
               {liveProduct.description}
             </p>
           </div>
@@ -625,24 +634,25 @@ useEffect(() => {
                 {[...Array(5)].map((_, i) => (
                   <FiStar
                     key={i}
-                    className={`w-5 h-5 ${i < Math.floor(liveProduct.ratings?.average || 0) ? 'fill-current' : 'fill-gray-300'}`}
+                    className="w-5 h-5"
+                    color={i < ratingValue ? '#D4AF37' : '#D1D5DB'}
                   />
                 ))}
               </div>
-              <span className="text-brand-brown">
+              <span className="text-black">
                 {liveProduct.ratings?.average ? liveProduct.ratings.average.toFixed(1) : '0'} 
                 {liveProduct.ratings?.count > 0 && ` (${liveProduct.ratings.count} reviews)`}
               </span>
             </div>
-            <span className="text-brand-brown">•</span>
-            <span className="text-brand-brown">{liveProduct.salesCount || 0} sold</span>
+            <span className="text-black">•</span>
+            <span className="text-black">{liveProduct.salesCount || 0} sold</span>
           </div>
 
           {/* Price */}
           <div className="flex items-center gap-4">
             {liveProduct.discount > 0 ? (
               <>
-                <span className="text-3xl font-bold text-brand-brown">
+                <span className="text-3xl font-bold text-black">
                   {formatPrice((liveProduct.price || 0) * (1 - ((liveProduct.discount || 0) / 100)))}
                 </span>
                 <span className="text-xl text-gray-500 line-through">
@@ -653,7 +663,7 @@ useEffect(() => {
                 </span>
               </>
             ) : (
-              <span className="text-3xl font-bold text-brand-brown">
+              <span className="text-3xl font-bold text-black">
                 {formatPrice(liveProduct.price || 0)}
               </span>
             )}
@@ -672,7 +682,7 @@ useEffect(() => {
                     {available ? 'In Stock' : 'Out of Stock'}
                   </span>
                   {available && (
-                    <span className="text-sm text-brand-brown">
+                    <span className="text-sm text-black">
                       {liveProduct.stock || 0} available
                     </span>
                   )}
@@ -683,7 +693,7 @@ useEffect(() => {
 
           {/* Quantity Selector */}
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-brand-brown">
+            <label className="block text-sm font-medium text-black">
               Quantity
             </label>
             <div className="flex items-center gap-3">
@@ -755,34 +765,34 @@ useEffect(() => {
 
           {/* Product Details */}
           <div className="space-y-4 pt-6 border-t border-gray-200">
-            <h3 className="text-lg font-semibold text-brand-brown">Product Details</h3>
+            <h3 className="text-lg font-semibold text-black">Product Details</h3>
             
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <span className="text-brand-brown">Category:</span>
-                <span className="ml-2 text-brand-brown capitalize">{liveProduct.category}</span>
+                <span className="text-black">Category:</span>
+                <span className="ml-2 text-black capitalize">{liveProduct.category}</span>
               </div>
               <div>
-                <span className="text-brand-brown">SKU:</span>
-                <span className="ml-2 text-brand-brown">{liveProduct.SKU}</span>
+                <span className="text-black">SKU:</span>
+                <span className="ml-2 text-black">{liveProduct.SKU}</span>
               </div>
               {liveProduct.dimensions && (
                 <div>
-                  <span className="text-brand-brown">Dimensions:</span>
-                  <span className="ml-2 text-brand-brown">{formatDimensions(liveProduct.dimensions)}</span>
+                  <span className="text-black">Dimensions:</span>
+                  <span className="ml-2 text-black">{formatDimensions(liveProduct.dimensions)}</span>
                 </div>
               )}
               {liveProduct.weight && (
                 <div>
-                  <span className="text-brand-brown">Weight:</span>
-                  <span className="ml-2 text-brand-brown">{formatWeight(liveProduct.weight)}</span>
+                  <span className="text-black">Weight:</span>
+                  <span className="ml-2 text-black">{formatWeight(liveProduct.weight)}</span>
                 </div>
               )}
             </div>
 
             {liveProduct.tags && liveProduct.tags.length > 0 && (
               <div>
-                <span className="text-brand-brown text-sm">Tags:</span>
+                <span className="text-black text-sm">Tags:</span>
                 <div className="flex flex-wrap gap-2 mt-2">
                   {liveProduct.tags.map((tag) => (
                     <span
@@ -800,8 +810,8 @@ useEffect(() => {
           {/* Care Instructions */}
           {liveProduct.careInstructions && (
             <div className="space-y-2 pt-6 border-t border-gray-200">
-              <h3 className="text-lg font-semibold text-brand-brown">Care Instructions</h3>
-              <p className="text-brand-brown text-sm">{liveProduct.careInstructions}</p>
+              <h3 className="text-lg font-semibold text-black">Care Instructions</h3>
+              <p className="text-black text-sm">{liveProduct.careInstructions}</p>
             </div>
           )}
 
@@ -810,22 +820,22 @@ useEffect(() => {
             <div className="flex items-center gap-3">
               <FiTruck className="w-6 h-6 text-brand-gold" />
               <div>
-                <div className="font-medium text-brand-brown">Free Shipping</div>
-                <div className="text-sm text-brand-brown">On orders over ₹1000</div>
+                <div className="font-medium text-black">Free Shipping</div>
+                <div className="text-sm text-black">On orders over ₹1000</div>
               </div>
             </div>
             <div className="flex items-center gap-3">
               <FiShield className="w-6 h-6 text-brand-gold" />
               <div>
-                <div className="font-medium text-brand-brown">Secure Payment</div>
-                <div className="text-sm text-brand-brown">100% secure checkout</div>
+                <div className="font-medium text-black">Secure Payment</div>
+                <div className="text-sm text-black">100% secure checkout</div>
               </div>
             </div>
             <div className="flex items-center gap-3">
               <FiRefreshCw className="w-6 h-6 text-brand-gold" />
               <div>
-                <div className="font-medium text-brand-brown">Easy Returns</div>
-                <div className="text-sm text-brand-brown">30-day return policy</div>
+                <div className="font-medium text-black">Easy Returns</div>
+                <div className="text-sm text-black">30-day return policy</div>
               </div>
             </div>
           </div>
@@ -844,10 +854,10 @@ useEffect(() => {
       {/* Same Color Products */}
       {sameColorProducts.length > 0 && selectedColor && (
         <div className="border-t border-gray-200 pt-12">
-          <h2 className="text-2xl font-playfair font-bold text-brand-brown mb-4">
+          <h2 className="text-2xl font-playfair font-bold text-black mb-4">
             More Products in {selectedColor.name}
           </h2>
-          <p className="text-brand-brown mb-8">Explore other products available in this color</p>
+          <p className="text-black mb-8">Explore other products available in this color</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {sameColorProducts.map((sameColorProduct) => (
               <motion.div
@@ -878,7 +888,7 @@ useEffect(() => {
                   </div>
                   
                   <div className="p-4">
-                    <h3 className="font-semibold text-brand-brown mb-2 line-clamp-2 group-hover:text-brand-gold transition-colors">
+                    <h3 className="font-semibold text-black mb-2 line-clamp-2 group-hover:text-brand-gold transition-colors">
                       {sameColorProduct.title}
                     </h3>
                     
@@ -886,7 +896,7 @@ useEffect(() => {
                       <div className="flex items-center gap-2">
                         {sameColorProduct.discount > 0 ? (
                           <>
-                            <span className="font-bold text-brand-brown">
+                            <span className="font-bold text-black">
                               {formatPrice(sameColorProduct.price * (1 - sameColorProduct.discount / 100))}
                             </span>
                             <span className="text-sm text-gray-500 line-through">
@@ -894,7 +904,7 @@ useEffect(() => {
                             </span>
                           </>
                         ) : (
-                          <span className="font-bold text-brand-brown">
+                          <span className="font-bold text-black">
                             {formatPrice(sameColorProduct.price)}
                           </span>
                         )}
@@ -920,7 +930,7 @@ useEffect(() => {
       {/* Related Products */}
       {relatedProducts.length > 0 && (
         <div className={`border-t border-gray-200 pt-12 ${sameColorProducts.length > 0 ? 'mt-12' : ''}`}>
-          <h2 className="text-2xl font-playfair font-bold text-brand-brown mb-8">
+          <h2 className="text-2xl font-playfair font-bold text-black mb-8">
             You Might Also Like
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -953,7 +963,7 @@ useEffect(() => {
                   </div>
                   
                   <div className="p-4">
-                    <h3 className="font-semibold text-brand-brown mb-2 line-clamp-2 group-hover:text-brand-gold transition-colors">
+                    <h3 className="font-semibold text-black mb-2 line-clamp-2 group-hover:text-brand-gold transition-colors">
                       {relatedProduct.title}
                     </h3>
                     
@@ -961,7 +971,7 @@ useEffect(() => {
                       <div className="flex items-center gap-2">
                         {relatedProduct.discount > 0 ? (
                           <>
-                            <span className="font-bold text-brand-brown">
+                            <span className="font-bold text-black">
                               {formatPrice(relatedProduct.price * (1 - relatedProduct.discount / 100))}
                             </span>
                             <span className="text-sm text-gray-500 line-through">
@@ -969,7 +979,7 @@ useEffect(() => {
                             </span>
                           </>
                         ) : (
-                          <span className="font-bold text-brand-brown">
+                          <span className="font-bold text-black">
                             {formatPrice(relatedProduct.price)}
                           </span>
                         )}

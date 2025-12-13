@@ -102,6 +102,16 @@ export default function CartDrawer({ isOpen, onClose }) {
                           {item.name}
                         </h4>
                         <p className="text-sm text-gray-500">{formatPrice(item.price)}</p>
+                        { (item.colorVariant || item.color) && (
+                          <div className="flex items-center gap-2 mt-1">
+                            <span className="inline-flex items-center gap-2 text-xs text-gray-600">
+                              {item.colorVariant?.hex && (
+                                <span className="w-4 h-4 rounded-full border" style={{ backgroundColor: item.colorVariant.hex }} />
+                              )}
+                              <span>{item.colorVariant?.name || (item.color?.name || item.color) || ''}</span>
+                            </span>
+                          </div>
+                        )}
                         
                         {/* Quantity Controls */}
                         <div className="flex items-center space-x-2 mt-2">

@@ -70,7 +70,8 @@ export function EnhancedCartProvider({ children }) {
         image: item.image,
         quantity: item.quantity,
         slug: item.slug,
-        colorVariant: item.colorVariant || null,
+        // Accept either `colorVariant` (object) or legacy `color` property
+        colorVariant: item.colorVariant || item.color || null,
       }));
 
       const response = await fetch('/api/cart', {

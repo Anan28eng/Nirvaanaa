@@ -55,12 +55,14 @@ export default function EnhancedProductCard({ product }) {
         : (liveProduct.colors && liveProduct.colors.length > 0 ? liveProduct.colors[0] : null);
 
       await addToCart({ 
+        productId: liveProduct.id || liveProduct._id,
         id: liveProduct.id || liveProduct._id, 
         name: liveProduct.name || liveProduct.title, 
         price: effectivePrice, 
         discount: discountPct, 
         image: liveProduct.mainImage || liveProduct.images?.[0]?.url, 
         slug: liveProduct.slug,
+        color: defaultColor || null,
         colorVariant: defaultColor ? {
           name: defaultColor.name || defaultColor,
           hex: defaultColor.hex || (defaultColor.color || null),

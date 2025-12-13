@@ -13,6 +13,7 @@ import UserMenu from '@/components/auth/UserMenu';
 export default function Navbar() {
   const { data: session } = useSession();
   const { getCartCount } = useEnhancedCart();
+  const [isHydrated, setIsHydrated] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -25,7 +26,11 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const cartCount = getCartCount();
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
+
+  const cartCount = isHydrated ? getCartCount() : 0;
 
   return (
     <>
@@ -82,7 +87,7 @@ export default function Navbar() {
                 )}
               </button>
 
-              {session ? (
+              {isHydrated && session ? (
                 <div className="relative">
                   <button
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}

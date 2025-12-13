@@ -74,14 +74,42 @@ export async function GET(request) {
       .limit(limit)
       .lean({ virtuals: true });
 
-    const products = (rawProducts || []).map((p) => ({
-      ...p,
-      id: p._id,
-      name: p.title,
-      mainImage: p.images?.[0]?.url || p.mainImage || null,
-      inStock: typeof p.stock === 'number' ? p.stock > 0 : false,
-      price: typeof p.price === 'number' ? p.price : Number(p.price || 0),
-    }));
+   const products = (rawProducts || []).map((p) => {
+  return {
+    ...p,
+    id: p._id,
+    name: p.title,
+
+    // keep main image stable
+    mainImage: p.mainImage || (p.images?.[0]?.url ?? null),
+
+    // normalize product images
+    images: Array.isArray(p.images)
+      ? p.images.map((img) =>
+          typeof img === 'string' ? { url: img } : img
+        )
+      : [],
+
+    // 🔑 normalize color variants for guest PDP
+    colorVariants: Array.isArray(p.colorVariants)
+      ? p.colorVariants.map((variant) => ({
+          ...variant,
+          images: Array.isArray(variant.images)
+            ? variant.images.map((img) =>
+                typeof img === 'string' ? img : img?.url
+              )
+            : [],
+        }))
+      : [],
+
+    inStock: typeof p.stock === 'number' ? p.stock > 0 : false,
+    price:
+      typeof p.price === 'number'
+        ? p.price
+        : Number(p.price || 0),
+  };
+});
+
 
     return NextResponse.json({ products, totalProducts: products.length });
   } catch (error) {

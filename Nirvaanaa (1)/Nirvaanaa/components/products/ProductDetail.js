@@ -27,122 +27,79 @@ const ProductDetail = ({ product }) => {
   const [sameColorProducts, setSameColorProducts] = useState([]);
   
   // Get reactive product from store
+  
   const { products, updateProduct, addProduct } = useAdminStore();
-  let liveProduct = products.find(p => p._id === product._id || p.id === product.id) || product;
 
-  // If the admin/store copy is missing images or color data (stale), prefer the server-provided
-  // `product` fields so anonymous users still see full variants and images.
-  if (product && liveProduct) {
-    liveProduct = {
-      ...liveProduct,
-      images: (liveProduct.images && liveProduct.images.length > 0) ? liveProduct.images : (product.images || []),
-      colorVariants: (liveProduct.colorVariants && liveProduct.colorVariants.length > 0) ? liveProduct.colorVariants : (product.colorVariants || []),
-      colors: (liveProduct.colors && liveProduct.colors.length > 0) ? liveProduct.colors : (product.colors || []),
-      mainImage: liveProduct.mainImage || product.mainImage,
-    };
-  }
+const storeProduct =
+  products.find(p => p._id === product._id || p.id === product.id) || null;
+
+const liveProduct = {
+  ...product, // server product is source of truth
+  ...(storeProduct
+    ? {
+        stock: storeProduct.stock,
+        salesCount: storeProduct.salesCount,
+        inStock: storeProduct.inStock,
+      }
+    : {}),
+};
+
   
   // Get color variants from product and ensure unique hex codes
   // Use useMemo to prevent unnecessary recalculations and improve loading
-  const colorVariants = useMemo(() => {
-    // First check colorVariants, then colors, then empty array
-    let variants = [];
-    
-    // Check if product has colorVariants
-    if (liveProduct.colorVariants && Array.isArray(liveProduct.colorVariants) && liveProduct.colorVariants.length > 0) {
-      variants = liveProduct.colorVariants;
-    } 
-    // Check if product has colors array
-    else if (liveProduct.colors && Array.isArray(liveProduct.colors) && liveProduct.colors.length > 0) {
-      variants = liveProduct.colors.map(c => {
-        if (typeof c === 'string') {
-          return {
-            name: c,
-            hex: '#000000',
-            images: []
-          };
-        }
-        return {
-          name: c.name || 'Color',
-          hex: c.hex || c.color || '#000000',
-          images: c.images || []
-        };
-      });
+ const colorVariants = useMemo(() => {
+  const source =
+    product.colorVariants?.length
+      ? product.colorVariants
+      : product.colors || [];
+
+  if (!Array.isArray(source) || source.length === 0) return [];
+
+  const hexMap = new Map();
+
+  return source.map((color, index) => {
+    let hex = color.hex || color.color || '#000000';
+
+    if (!hex.startsWith('#')) hex = `#${hex}`;
+    if (!/^#[0-9A-Fa-f]{6}$/.test(hex)) {
+      hex = `#${(index * 123456).toString(16).padStart(6, '0').slice(0, 6)}`;
     }
-    
-    if (variants.length === 0) return [];
-    
-    // Ensure unique hex codes - if duplicates found, generate unique ones
-    const hexMap = new Map();
-    return variants.map((color, index) => {
-      let hex = color.hex || color.color || '#000000';
-      // Normalize hex code (ensure it starts with #)
-      if (!hex.startsWith('#')) {
-        hex = '#' + hex;
-      }
-      
-      // Ensure hex is valid (6 hex digits)
-      if (!/^#[0-9A-Fa-f]{6}$/.test(hex)) {
-        // Generate a default hex if invalid
-        hex = `#${(index * 1000000).toString(16).padStart(6, '0').substring(0, 6)}`;
-      }
-      
-      // If hex already exists, generate a unique one
-      if (hexMap.has(hex.toLowerCase())) {
-        // Generate a unique hex by slightly modifying the color
-        const baseHex = hex.replace('#', '');
-        try {
-          const r = parseInt(baseHex.substring(0, 2), 16);
-          const g = parseInt(baseHex.substring(2, 4), 16);
-          const b = parseInt(baseHex.substring(4, 6), 16);
-          // Slightly adjust the color to make it unique
-          const adjustedR = Math.min(255, Math.max(0, r + (index * 5) % 20));
-          const adjustedG = Math.min(255, Math.max(0, g + (index * 3) % 15));
-          const adjustedB = Math.min(255, Math.max(0, b + (index * 7) % 25));
-          hex = `#${adjustedR.toString(16).padStart(2, '0')}${adjustedG.toString(16).padStart(2, '0')}${adjustedB.toString(16).padStart(2, '0')}`;
-        } catch (e) {
-          // Fallback if parsing fails
-          hex = `#${(index * 1000000).toString(16).padStart(6, '0').substring(0, 6)}`;
-        }
-      }
-      hexMap.set(hex.toLowerCase(), true);
-      
-      return {
-        ...color,
-        hex: hex,
-        name: color.name || `Color ${index + 1}`
-      };
-    });
-  }, [liveProduct.colorVariants, liveProduct.colors]);
+
+    if (hexMap.has(hex.toLowerCase())) {
+      hex = `#${(index * 654321).toString(16).padStart(6, '0').slice(0, 6)}`;
+    }
+
+    hexMap.set(hex.toLowerCase(), true);
+
+    return {
+      ...color,
+      name: color.name || `Color ${index + 1}`,
+      hex,
+      images: color.images || [],
+    };
+  });
+}, [product.colorVariants, product.colors]);
+
 
   // Initialize selectedColor to prevent hydration errors
   // Use useState with lazy initialization to ensure colorVariants is available
   // Initialize with first color variant if available to prevent hydration mismatch
-  const [selectedColor, setSelectedColor] = useState(() => {
-    // Only initialize on client side to prevent hydration errors
-    if (typeof window !== 'undefined' && colorVariants.length > 0) {
-      return colorVariants[0];
-    }
-    return null;
+const [selectedColor, setSelectedColor] = useState(null);
+
+useEffect(() => {
+  if (!colorVariants.length) return;
+
+  setSelectedColor(prev => {
+    if (!prev) return colorVariants[0];
+
+    const stillExists = colorVariants.some(
+      c => c.name === prev.name || c.hex === prev.hex
+    );
+
+    return stillExists ? prev : colorVariants[0];
   });
-  
-  // Initialize selectedColor immediately when colorVariants are available (prevents hydration errors)
-  useEffect(() => {
-    if (colorVariants.length > 0) {
-      if (!selectedColor) {
-        setSelectedColor(colorVariants[0]);
-      } else {
-        // Ensure selected color is still valid
-        const isValid = colorVariants.some(cv => 
-          (selectedColor.name && cv.name === selectedColor.name) || 
-          (selectedColor.hex && cv.hex === selectedColor.hex)
-        );
-        if (!isValid) {
-          setSelectedColor(colorVariants[0]);
-        }
-      }
-    }
-  }, [colorVariants.length]); // Only depend on length to avoid unnecessary re-renders
+}, [colorVariants]);
+
 
   // Seed store with the provided product if it's missing so all UIs share one reactive source
   useEffect(() => {
@@ -1038,4 +995,5 @@ const ProductDetail = ({ product }) => {
   );
 };
 
-export default ProductDetail;
+export default ProductDetail; 
+

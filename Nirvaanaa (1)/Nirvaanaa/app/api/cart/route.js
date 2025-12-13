@@ -28,17 +28,23 @@ export async function POST(req) {
   // debug: log incoming payload for troubleshooting
   console.debug('[DEBUG] /api/cart POST body:', JSON.stringify(body));
     const { productId, name, price, image, quantity = 1, slug, items } = body;
+    const getColorKey = (color) => {
+      if (!color) return '';
+      return (color.hex || color.name || '').toString();
+    };
     
     if (body.email) {
       const user = await User.findOne({ email: body.email.toLowerCase() });
       if (user) {
         if (items) {
           // Bulk update cart items - compute deltas vs existing cart, validate and apply stock/sales changes
-          const existingMap = new Map(user.cart.map(i => [String(i.productId), i.quantity]));
+          // Map existing by productId + color key so different color variants are separate
+          const existingMap = new Map(user.cart.map(i => [`${String(i.productId)}::${getColorKey(i.colorVariant)}`, i.quantity]));
           for (const item of items) {
             const product = await Product.findById(item.productId);
             if (!product) continue;
-            const prevQty = existingMap.get(String(item.productId)) || 0;
+            const key = `${String(item.productId)}::${getColorKey(item.colorVariant)}`;
+            const prevQty = existingMap.get(key) || 0;
             const delta = (item.quantity || 0) - prevQty;
             if (delta > 0 && product.stock < delta) {
               return NextResponse.json(
@@ -55,7 +61,8 @@ export async function POST(req) {
           }));
           for (const it of items) {
             try {
-              const prevQty = existingMap.get(String(it.productId)) || 0;
+              const key = `${String(it.productId)}::${getColorKey(it.colorVariant)}`;
+              const prevQty = existingMap.get(key) || 0;
               const delta = (it.quantity || 0) - prevQty;
               if (delta !== 0) {
                 const updated = await Product.findByIdAndUpdate(it.productId, {
@@ -79,8 +86,9 @@ export async function POST(req) {
               { status: 400 }
             );
           }
-          
-      const existing = user.cart.find(i => String(i.productId) === String(productId));
+
+          const colorKey = getColorKey(body.colorVariant);
+          const existing = user.cart.find(i => String(i.productId) === String(productId) && getColorKey(i.colorVariant) === colorKey);
           if (existing) {
             const newQuantity = existing.quantity + quantity;
             if (product && product.stock < newQuantity) {
@@ -89,22 +97,22 @@ export async function POST(req) {
                 { status: 400 }
               );
             }
-                existing.quantity = newQuantity;
-        // increment salesCount for added quantity and decrement stock by added quantity
-        try { await Product.findByIdAndUpdate(productId, { $inc: { salesCount: quantity, stock: -quantity } }); } catch(e) {}
+            existing.quantity = newQuantity;
+            // increment salesCount for added quantity and decrement stock by added quantity
+            try { await Product.findByIdAndUpdate(productId, { $inc: { salesCount: quantity, stock: -quantity } }); } catch(e) {}
           } else {
-        user.cart.push({ 
-          productId, 
-          name, 
-          price, 
-          discount: body.discount || 0, 
-          image, 
-          quantity, 
-          slug,
-          colorVariant: body.colorVariant || null
-        });
-        // increment salesCount and decrement stock for newly added product
-        try { await Product.findByIdAndUpdate(productId, { $inc: { salesCount: quantity, stock: -quantity } }); } catch(e) {}
+            user.cart.push({ 
+              productId, 
+              name, 
+              price, 
+              discount: body.discount || 0, 
+              image, 
+              quantity, 
+              slug,
+              colorVariant: body.colorVariant || null
+            });
+            // increment salesCount and decrement stock for newly added product
+            try { await Product.findByIdAndUpdate(productId, { $inc: { salesCount: quantity, stock: -quantity } }); } catch(e) {}
           }
         }
         await user.save();

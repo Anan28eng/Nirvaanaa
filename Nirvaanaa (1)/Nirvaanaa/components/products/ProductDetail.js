@@ -28,7 +28,19 @@ const ProductDetail = ({ product }) => {
   
   // Get reactive product from store
   const { products, updateProduct, addProduct } = useAdminStore();
-  const liveProduct = products.find(p => p._id === product._id || p.id === product.id) || product;
+  let liveProduct = products.find(p => p._id === product._id || p.id === product.id) || product;
+
+  // If the admin/store copy is missing images or color data (stale), prefer the server-provided
+  // `product` fields so anonymous users still see full variants and images.
+  if (product && liveProduct) {
+    liveProduct = {
+      ...liveProduct,
+      images: (liveProduct.images && liveProduct.images.length > 0) ? liveProduct.images : (product.images || []),
+      colorVariants: (liveProduct.colorVariants && liveProduct.colorVariants.length > 0) ? liveProduct.colorVariants : (product.colorVariants || []),
+      colors: (liveProduct.colors && liveProduct.colors.length > 0) ? liveProduct.colors : (product.colors || []),
+      mainImage: liveProduct.mainImage || product.mainImage,
+    };
+  }
   
   // Get color variants from product and ensure unique hex codes
   // Use useMemo to prevent unnecessary recalculations and improve loading

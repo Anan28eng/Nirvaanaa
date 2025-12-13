@@ -49,13 +49,23 @@ export default function EnhancedProductCard({ product }) {
       const discountPct = typeof liveProduct.discount === 'number' ? liveProduct.discount : 0;
       const effectivePrice = Math.round((liveProduct.price * (1 - discountPct / 100)));
       // pass a normalized item (id, name, price, discount) and quantity
+      // Choose a default color variant when present so the cart preserves color info
+      const defaultColor = (liveProduct.colorVariants && liveProduct.colorVariants.length > 0)
+        ? liveProduct.colorVariants[0]
+        : (liveProduct.colors && liveProduct.colors.length > 0 ? liveProduct.colors[0] : null);
+
       await addToCart({ 
         id: liveProduct.id || liveProduct._id, 
         name: liveProduct.name || liveProduct.title, 
         price: effectivePrice, 
         discount: discountPct, 
         image: liveProduct.mainImage || liveProduct.images?.[0]?.url, 
-        slug: liveProduct.slug 
+        slug: liveProduct.slug,
+        colorVariant: defaultColor ? {
+          name: defaultColor.name || defaultColor,
+          hex: defaultColor.hex || (defaultColor.color || null),
+          images: defaultColor.images || []
+        } : null
       }, 1);
       
       toast.success('Added to cart!');

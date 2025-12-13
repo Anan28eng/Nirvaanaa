@@ -149,6 +149,9 @@ const ProductDetail = ({ product }) => {
         category: product.category,
         slug: product.slug,
         mainImage: product.mainImage,
+        images: product.images || [],
+        colors: product.colors || [],
+        colorVariants: product.colorVariants || [],
         discount: product.discount || 0,
         featured: product.featured || false,
         inStock: product.inStock ?? (typeof product.stock === 'number' ? product.stock > 0 : false),
@@ -756,19 +759,15 @@ const ProductDetail = ({ product }) => {
             <button
               onClick={async () => {
                 try {
-                  if (!session?.user?.email) {
-                    toast.error('Please sign in to save to wishlist');
-                    return;
-                  }
                   const discountPct = typeof liveProduct.discount === 'number' ? liveProduct.discount : 0;
                   const effectivePrice = Math.round((liveProduct.price || 0) * (1 - discountPct / 100));
                   await addToWishlist({
-                        id: liveProduct._id || liveProduct.id,
-                        name: liveProduct.title || liveProduct.name,
-                        price: effectivePrice,
-                        discount: discountPct,
-                        image: liveProduct.mainImage,
-                        slug: liveProduct.slug,
+                    id: liveProduct._id || liveProduct.id,
+                    name: liveProduct.title || liveProduct.name,
+                    price: effectivePrice,
+                    discount: discountPct,
+                    image: liveProduct.mainImage,
+                    slug: liveProduct.slug,
                   });
                   toast.success('Saved to wishlist');
                 } catch (err) {

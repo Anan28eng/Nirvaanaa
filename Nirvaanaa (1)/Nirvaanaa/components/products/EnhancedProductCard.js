@@ -29,10 +29,7 @@ export default function EnhancedProductCard({ product }) {
   const salesCount = liveProduct.salesCount || 0;
 
   const handleAddToCart = async () => {
-    if (!session) {
-      toast.error('Please sign in to add items to cart');
-      return;
-    }
+    // Allow adding to cart for anonymous users; cart provider will handle local storage
 
     // Check stock availability using live product data
     if (liveProduct.stock !== undefined && liveProduct.stock < 1) {
@@ -80,6 +77,9 @@ export default function EnhancedProductCard({ product }) {
           category: liveProduct.category,
           slug: liveProduct.slug,
           mainImage: liveProduct.mainImage || liveProduct.images?.[0]?.url,
+          images: liveProduct.images || [],
+          colors: liveProduct.colors || [],
+          colorVariants: liveProduct.colorVariants || [],
           discount: liveProduct.discount || 0,
           featured: liveProduct.featured || false,
           inStock: liveProduct.inStock,
@@ -108,11 +108,6 @@ export default function EnhancedProductCard({ product }) {
   };
 
   const handleWishlistToggle = async () => {
-    if (!session) {
-      toast.error('Please sign in to manage wishlist');
-      return;
-    }
-
     setIsWishlistLoading(true);
     try {
       if (hasItem(liveProduct.id || liveProduct._id)) {
